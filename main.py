@@ -5,6 +5,7 @@ from data import refresh_satellite_data
 from schemas import SatelliteQuery
 import models
 import data
+import os
 
 # Create DB tables
 models.Base.metadata.create_all(bind=engine)
@@ -49,7 +50,12 @@ async def get_satellites(db: Session = Depends(get_db), params: SatelliteQuery =
 
 
 @app.post("/refresh/")
-async def refresh_data(db: Session = Depends(get_db)):
+async def refresh_data(db: Session = Depends(get_db), api_key = None):
+
+    # Verify user has appropriate permissions
+    if api_key != os.getenv('API_KEY'):
+        return {"status": "Invalid credentials"}
+
     refresh_satellite_data(db)
     return {"status": "success"}
    

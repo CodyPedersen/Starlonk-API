@@ -13,12 +13,6 @@ password = os.getenv('DB_PASSWORD')
 port = os.getenv('DB_PORT')
 database = os.getenv('DB_NAME')
 
-# host='0.0.0.0'
-# user = 'postgres'
-# password = 'postgres'
-# database = 'postgres'
-# port = 5432
-
 DATABASE_CONNECTION_URI = f'postgresql://{user}:{password}@{host}:{port}/{database}'
 print(DATABASE_CONNECTION_URI)
 

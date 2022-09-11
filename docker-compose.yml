@@ -10,7 +10,6 @@ services:
       - '5432:5432'
     volumes: 
       - stardb:/var/lib/postgresql/data
-
   api:
     image: starlink-api-init:latest
     build:
@@ -26,6 +25,7 @@ services:
       DB_PASSWORD: postgres
       DB_NAME: postgres
       DB_PORT: 5432
+      API_KEY: t3hm4st3rk3y
 volumes:
   stardb:
     driver: local
