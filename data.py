@@ -1,7 +1,6 @@
 import requests
 from models import Satellite
 from sqlalchemy.orm import Session #probably not necessary
-import json
 
 
 def clean_satellite_data(satellite_json, source):
@@ -10,6 +9,10 @@ def clean_satellite_data(satellite_json, source):
     # Change satellite keys to a more readable format
     for raw_satellite in satellite_json:
         satellite = {}
+
+        #DEBUG
+        if raw_satellite['OBJECT_ID'] == '2019-029T':
+            print(raw_satellite)
 
         # Modify keys to Satellite model standards
         satellite['satellite_name'] = raw_satellite['OBJECT_NAME']
@@ -49,29 +52,31 @@ def pull_satellite_data():
     
     # Pull NOAA satellites
 
-    
     return starlink_satellites
-
 
 
 def refresh_satellite_data(db: Session):
     satellite_data = pull_satellite_data()
-    satellite_objects = []
-
+    satellites_to_add = []
+    updated_ids = {}
+    
+    print("in refresh_satellite_data")
     # Unpack and create object for each satellite
     for satellite_json in satellite_data:
-
-        # Update value if it exists in DB already
-        updated = db.query(Satellite).filter(Satellite.satellite_id == satellite_json['satellite_id']).update(satellite_json)
         
-        # If successfully updated, remove the json object from satellite data 
-        if updated:
-            satellite_data.remove(satellite_json)
-        else:
+        ''' PROBLEM -> Keeps updating the same entry '''
+        # Update value if it exists in DB already
+
+        updated = False
+
+        updated = db.query(Satellite).filter(Satellite.satellite_id == satellite_json['satellite_id']).update(satellite_json)
+        db.commit()
+
+        if not updated:
             satellite = Satellite(**satellite_json)
-            satellite_objects.append(satellite)
+            satellites_to_add.append(satellite)
+            print("adding")
+            print(satellite_json)
 
-    db.add_all(satellite_objects)
+    db.add_all(satellites_to_add)
     db.commit()
-
-#refresh_satellite_data()
