@@ -1,10 +1,10 @@
 from fastapi import FastAPI, Body, Depends, HTTPException
 from sqlalchemy.orm import Session
-from database import engine, SessionLocal
-from data import refresh_satellite_data
-from schemas import SatelliteQuery
-import predict
-import models
+from utils.database import engine, SessionLocal
+from utils.data import refresh_satellite_data
+from utils.schemas import SatelliteQuery
+import utils.predict as predict
+import utils.models as models
 import os
 
 # Create DB tables
@@ -24,13 +24,6 @@ def get_db():
 @app.get("/")
 async def get_home():
     return {"message" : "Starlink API. See <this site>/docs"}
-
-
-# # Get all Starlink Satellites
-# @app.get("/satellites/")
-# async def get_satellites(db: Session = Depends(get_db)):
-#     satellites = db.query(models.Satellite).all()
-#     return {"satellites" : satellites}
 
 
 @app.get("/satellites/")
@@ -92,11 +85,6 @@ async def get_satellites(db: Session = Depends(get_db), params: SatelliteQuery =
 
     return {"satellites" : satellite_predictions}
 
-
-
-
-
-
    
 # uvicorn main:app --reload
 
@@ -113,19 +101,5 @@ async def get_satellites(db: Session = Depends(get_db), params: SatelliteQuery =
     arg_of_pericenter (degrees): 
     mean_anomaly (degrees): 
     bstar: drag calculation
-
-'''
-
-
-'''
-Inclination:
-- First shell: 1,440 in a 550 km (341.8 mi) altitude shell at 53.0° inclination
-- Second shell: 1,440 in a 540 km (335.5 mi) shell at 53.2° inclination
-- Third shell: 720 in a 570 km (354.2 mi) shell at 70° inclination
-- Fourth shell: 336 in a 560 km (348.0 mi) shell at 97.6° inclination
-- Fifth shell: 172 satellites in a 560 km (348.0 mi) shell at 97.6° inclination
-
-
-
 
 '''
