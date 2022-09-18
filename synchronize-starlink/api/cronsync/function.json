@@ -1,0 +1,14 @@
+
+
+{
+    "scriptFile": "__init__.py",
+    "bindings": [
+        {
+        "schedule": "0 */5 * * * *",
+        "name": "mytimer",
+        "type": "timerTrigger",
+        "direction": "in",
+        "runOnStartup" : true
+        }
+    ]
+}
