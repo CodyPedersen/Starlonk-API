@@ -17,7 +17,7 @@ def main(mytimer: func.TimerRequest) -> None:
     api_key = os.environ["api_key"]
 
     # Attempt to refresh data
-    response = requests.post(url=sync_url, params={"api_key" : api_key})
+    response = requests.post(url=sync_url, headers={"Authorization" : api_key})
     output_json = response.json()
 
     logging.info(output_json)

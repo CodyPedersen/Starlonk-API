@@ -1,4 +1,5 @@
-from fastapi import FastAPI, Body, Depends, HTTPException
+from fastapi import FastAPI, Body, Depends, Header
+from typing import Union
 from sqlalchemy.orm import Session
 from utils.database import engine, SessionLocal
 from utils.data import refresh_satellite_data
@@ -28,7 +29,6 @@ async def get_home():
 
 @app.get("/satellites/")
 async def get_satellites(db: Session = Depends(get_db), params: SatelliteQuery = Depends()):
-
     param_dict = params.dict(exclude_none=True)
 
     query = db.query(models.Satellite) # Not query.all() as that returns a list
@@ -41,23 +41,11 @@ async def get_satellites(db: Session = Depends(get_db), params: SatelliteQuery =
 
     return {"satellites" : satellite_list}
 
-
-@app.post("/refresh/")
-async def refresh_data(db: Session = Depends(get_db), api_key = None):
-
-    # Verify user has appropriate permissions
-    if api_key != os.getenv('API_KEY'):
-        return {"status": "Invalid credentials"}
-
-    refresh_satellite_data(db)
-    return {"status": "success"}
    
 @app.get("/predict/")
 async def get_satellites(db: Session = Depends(get_db), params: SatelliteQuery = Depends()):
-
     param_dict = params.dict(exclude_none=True)
     satellite_id = param_dict['satellite_id']
-
     epoch = param_dict['epoch']
     
     # Get satellite
@@ -67,9 +55,9 @@ async def get_satellites(db: Session = Depends(get_db), params: SatelliteQuery =
 
     return satellite_prediction
 
+
 @app.get("/bulk_predict/")
 async def get_satellites(db: Session = Depends(get_db), params: SatelliteQuery = Depends()):
-
     param_dict = params.dict(exclude_none=True)
     epoch = param_dict['epoch']
 
@@ -85,7 +73,17 @@ async def get_satellites(db: Session = Depends(get_db), params: SatelliteQuery =
 
     return {"satellites" : satellite_predictions}
 
-   
+
+@app.post("/admin/refresh/")
+async def refresh_data(db: Session = Depends(get_db), Authorization: Union[str, None] = Header(default=None)):
+
+    # Verify user has appropriate permissions
+    if Authorization != os.getenv('API_KEY'):
+        return {"status": "Invalid credentials"}
+
+    refresh_satellite_data(db)
+    return {"status": "success"}
+
 # uvicorn main:app --reload
 
 

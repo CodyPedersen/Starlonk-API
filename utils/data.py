@@ -10,10 +10,6 @@ def clean_satellite_data(satellite_json, source):
     for raw_satellite in satellite_json:
         satellite = {}
 
-        #DEBUG
-        if raw_satellite['OBJECT_ID'] == '2019-029T':
-            print(raw_satellite)
-
         # Modify keys to Satellite model standards
         satellite['satellite_name'] = raw_satellite['OBJECT_NAME']
         satellite['satellite_id'] = raw_satellite['OBJECT_ID']
@@ -59,24 +55,17 @@ def refresh_satellite_data(db: Session):
     satellite_data = pull_satellite_data()
     satellites_to_add = []
     updated_ids = {}
-    
-    print("in refresh_satellite_data")
+
     # Unpack and create object for each satellite
     for satellite_json in satellite_data:
-        
-        ''' PROBLEM -> Keeps updating the same entry '''
-        # Update value if it exists in DB already
 
         updated = False
-
         updated = db.query(Satellite).filter(Satellite.satellite_id == satellite_json['satellite_id']).update(satellite_json)
         db.commit()
 
         if not updated:
             satellite = Satellite(**satellite_json)
             satellites_to_add.append(satellite)
-            print("adding")
-            print(satellite_json)
 
     db.add_all(satellites_to_add)
     db.commit()
