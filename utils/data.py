@@ -3,7 +3,7 @@ from utils.models import Satellite
 from sqlalchemy.orm import Session #probably not necessary
 
 
-def clean_satellite_data(satellite_json, source):
+def format_satellite_data(satellite_json, source):
     satellites = []
 
     # Change satellite keys to a more readable format
@@ -42,17 +42,17 @@ def pull_satellite_data():
     satellite_response = requests.get(url=starlink)
     raw_data = satellite_response.json()
 
-    starlink_satellites = clean_satellite_data(raw_data, 'STARLINK')
-
     # Pull Military satellites
     
     # Pull NOAA satellites
 
-    return starlink_satellites
+    return raw_data
 
 
 def refresh_satellite_data(db: Session):
-    satellite_data = pull_satellite_data()
+    raw_data = pull_satellite_data()
+    satellite_data = format_satellite_data(raw_data, 'STARLINK')
+
     satellites_to_add = []
     updated_ids = {}
 
