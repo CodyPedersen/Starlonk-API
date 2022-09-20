@@ -1,7 +1,8 @@
 import datetime
 from dateutil import parser
+from utils.models import Satellite
 
-def predict_location(satellite, prediction_epoch):
+def predict_location(satellite: Satellite, prediction_epoch: str) -> dict:
     
     # Get & parse epoch of satellite
     orig_rev_at_epoch = getattr(satellite, 'rev_at_epoch')

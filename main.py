@@ -8,7 +8,7 @@ import utils.predict as predict
 import utils.models as models
 import os
 
-# Create DB tables
+# Create DB tables if DNE
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()

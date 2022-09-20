@@ -1,9 +1,9 @@
 import requests
 from utils.models import Satellite
-from sqlalchemy.orm import Session #probably not necessary
+from sqlalchemy.orm import Session
 
 
-def format_satellite_data(satellite_json, source):
+def format_satellite_data(satellite_json: list, source: str) -> list:
     satellites = []
 
     # Change satellite keys to a more readable format
@@ -31,11 +31,11 @@ def format_satellite_data(satellite_json, source):
 
         # Push `clean` satellite to `cleaned_data`
         satellites.append(satellite)
-    
+
     return satellites
 
 
-def pull_satellite_data():
+def pull_satellite_data() -> list:
 
     # Pull STARLINK satellites
     starlink = 'https://celestrak.org/NORAD/elements/gp.php?GROUP=starlink&FORMAT=json-pretty'
@@ -49,7 +49,7 @@ def pull_satellite_data():
     return raw_data
 
 
-def refresh_satellite_data(db: Session):
+def refresh_satellite_data(db: Session) -> None:
     raw_data = pull_satellite_data()
     satellite_data = format_satellite_data(raw_data, 'STARLINK')
 
