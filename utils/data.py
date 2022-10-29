@@ -1,6 +1,20 @@
 import requests
 from utils.models import Satellite
 from sqlalchemy.orm import Session
+# import logging
+import traceback
+from datetime import datetime
+
+# logger = logging.getLogger(__name__)
+# logging.basicConfig(format='Custom Logs: %(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
+
+
+def log_data(data):
+    with open("log.txt", mode="a+") as logfile:
+        try:
+            logfile.write(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + ': ' + data + "\n")
+        except:
+            logfile.write("Failed to write\n")
 
 
 def format_satellite_data(satellite_json: list, source: str) -> list:
@@ -39,8 +53,26 @@ def pull_satellite_data() -> list:
 
     # Pull STARLINK satellites
     starlink = 'https://celestrak.org/NORAD/elements/gp.php?GROUP=starlink&FORMAT=json-pretty'
-    satellite_response = requests.get(url=starlink)
-    raw_data = satellite_response.json()
+    
+    log_data("Pulling data from NORAD")
+    print("Pulling data from NORAD")
+    try:
+        satellite_response = requests.get(url=starlink)
+        log_data(f"satellite_response{satellite_response}")
+    except:
+        log_data("Unable to complete request")
+
+        log_data(traceback.print_exc())
+        log_data(traceback.print_exception())
+
+    log_data("Parsing data from NORAD")
+    print("Parsing data from NORAD")
+    try:
+        raw_data = satellite_response.json()
+    except:
+        log_data("Unable to parse response")
+        log_data(traceback.print_exc())
+        log_data(traceback.print_exception())
 
     # Pull Military satellites
     
@@ -49,12 +81,13 @@ def pull_satellite_data() -> list:
     return raw_data
 
 
-def refresh_satellite_data(db: Session) -> None:
+async def refresh_satellite_data(db: Session) -> None:
     raw_data = pull_satellite_data()
     satellite_data = format_satellite_data(raw_data, 'STARLINK')
+    log_data("About to parse satellite data")
+    log_data(f"satellite_data{satellite_data}")
 
     satellites_to_add = []
-    updated_ids = {}
 
     # Unpack and create object for each satellite
     for satellite_json in satellite_data:
@@ -67,5 +100,7 @@ def refresh_satellite_data(db: Session) -> None:
             satellite = Satellite(**satellite_json)
             satellites_to_add.append(satellite)
 
+    log_data("About to add satellite data")
     db.add_all(satellites_to_add)
+    log_data("About to commit satellite data")
     db.commit()

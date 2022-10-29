@@ -18,7 +18,6 @@ def predict_location(satellite: Satellite, prediction_epoch: str) -> dict:
     # get time delta in seconds
     time_delta_s = (prediction_epoch - epoch).total_seconds()
 
-    
     # calculate degree change per second
     mean_motion = getattr(satellite, 'mean_motion')
     hours_per_rotation = 24/mean_motion

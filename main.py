@@ -1,8 +1,8 @@
-from fastapi import FastAPI, Body, Depends, Header
+from fastapi import FastAPI, Body, Depends, Header, BackgroundTasks, status
 from typing import Union
 from sqlalchemy.orm import Session
 from utils.database import engine, SessionLocal
-from utils.data import refresh_satellite_data
+from utils.data import refresh_satellite_data, log_data
 from utils.schemas import SatelliteQuery
 import utils.predict as predict
 import utils.models as models
@@ -74,15 +74,17 @@ async def get_satellites(db: Session = Depends(get_db), params: SatelliteQuery =
     return {"satellites" : satellite_predictions}
 
 
-@app.post("/admin/refresh/")
-async def refresh_data(db: Session = Depends(get_db), Authorization: Union[str, None] = Header(default=None)):
+@app.post("/admin/refresh/", status_code=202)
+async def refresh_data(background_tasks : BackgroundTasks, db: Session = Depends(get_db), Authorization: Union[str, None] = Header(default=None)):
 
     # Verify user has appropriate permissions
     if Authorization != os.getenv('API_KEY'):
         return {"status": "Invalid credentials"}
 
-    refresh_satellite_data(db)
-    return {"status": "success"}
+    background_tasks.add_task(refresh_satellite_data, db)
+    #refresh_satellite_data(db)
+    log_data("Refreshed satellite data")
+    return {"status": "accepted"}
 
 # uvicorn main:app --reload
 
