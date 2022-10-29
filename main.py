@@ -1,11 +1,13 @@
-from fastapi import FastAPI, Body, Depends, Header, BackgroundTasks, status
+from fastapi import FastAPI, Depends, Header, BackgroundTasks, status
 from typing import Union
 from sqlalchemy.orm import Session
 from utils.database import engine, SessionLocal
 from utils.data import refresh_satellite_data, log_data
 from utils.schemas import SatelliteQuery
+from utils.auth import authorize
 import utils.predict as predict
 import utils.models as models
+import uuid
 import os
 
 # Create DB tables if DNE
@@ -61,30 +63,34 @@ async def get_satellites(db: Session = Depends(get_db), params: SatelliteQuery =
     param_dict = params.dict(exclude_none=True)
     epoch = param_dict['epoch']
 
-    satellite_predictions = []
-
     # Get all satellites in DB
     all_satellites = db.query(models.Satellite).all()
 
     # Get location prediction for all satellites
+    satellite_predictions = []
     for satellite in all_satellites:
         satellite_prediction = predict.predict_location(satellite, epoch)
         satellite_predictions.append(satellite_prediction)
 
     return {"satellites" : satellite_predictions}
 
-
 @app.post("/admin/refresh/", status_code=202)
+@authorize
 async def refresh_data(background_tasks : BackgroundTasks, db: Session = Depends(get_db), Authorization: Union[str, None] = Header(default=None)):
-
-    # Verify user has appropriate permissions
-    if Authorization != os.getenv('API_KEY'):
-        return {"status": "Invalid credentials"}
-
-    background_tasks.add_task(refresh_satellite_data, db)
-    #refresh_satellite_data(db)
+    pid = str(uuid.uuid4())
+    background_tasks.add_task(refresh_satellite_data, db, pid)
     log_data("Refreshed satellite data")
-    return {"status": "accepted"}
+    return {"status": "accepted", "pid" : pid}
+
+
+@app.get("/admin/process/{process_id}")
+@authorize
+async def get_process(process_id, db: Session = Depends(get_db), Authorization: Union[str, None] = Header(default=None)):
+    print(Authorization)
+    process = db.query(models.Process).filter(models.Process.id == process_id).one()
+    return {"process" : process.to_dict()}
+    
+
 
 # uvicorn main:app --reload
 

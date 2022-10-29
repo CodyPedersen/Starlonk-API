@@ -1,5 +1,5 @@
 import requests
-from utils.models import Satellite
+from utils.models import Satellite, Process
 from sqlalchemy.orm import Session
 # import logging
 import traceback
@@ -15,6 +15,30 @@ def log_data(data):
             logfile.write(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + ': ' + data + "\n")
         except:
             logfile.write("Failed to write\n")
+
+
+def push_process(db : Session, pid: str, status: str):
+    print("pushing process to db")
+    process_data = {
+        "id" : pid,
+        "status" : status
+    }
+
+    # Query processes on pid
+    exists = db.query(Process).filter(Process.id == pid)
+
+    # Update value if exists, else create
+    if exists.first():
+        process_obj = exists.one()
+        process_obj.status = status
+        db.commit()
+    else:
+        process = Process(**process_data)
+        db.add(process)
+
+    
+    db.commit()
+    print("pushed process to db")
 
 
 def format_satellite_data(satellite_json: list, source: str) -> list:
@@ -54,7 +78,7 @@ def pull_satellite_data() -> list:
     # Pull STARLINK satellites
     starlink = 'https://celestrak.org/NORAD/elements/gp.php?GROUP=starlink&FORMAT=json-pretty'
     
-    log_data("Pulling data from NORAD")
+    log_data("1 from NORAD")
     print("Pulling data from NORAD")
     try:
         satellite_response = requests.get(url=starlink)
@@ -81,15 +105,19 @@ def pull_satellite_data() -> list:
     return raw_data
 
 
-async def refresh_satellite_data(db: Session) -> None:
+async def refresh_satellite_data(db: Session, pid: str) -> None:
+    ''' Pulls Satellite data from Gov. sources, cleans it and pushes it to the DB '''
+
+    # Create Process and push to DB
+    push_process(db, pid, status="started")
+
+    # Begin satellite data ETL
     raw_data = pull_satellite_data()
     satellite_data = format_satellite_data(raw_data, 'STARLINK')
-    log_data("About to parse satellite data")
-    log_data(f"satellite_data{satellite_data}")
-
-    satellites_to_add = []
+    log_data(f"About to parse satellite data {satellite_data}")
 
     # Unpack and create object for each satellite
+    satellites_to_add = []
     for satellite_json in satellite_data:
 
         updated = False
@@ -104,3 +132,4 @@ async def refresh_satellite_data(db: Session) -> None:
     db.add_all(satellites_to_add)
     log_data("About to commit satellite data")
     db.commit()
+    push_process(db, pid, "complete")

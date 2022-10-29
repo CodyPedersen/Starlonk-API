@@ -1,5 +1,7 @@
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Float, DateTime
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
+from sqlalchemy.sql import func
 from . database import Base
 
 class Satellite(Base):
@@ -21,6 +23,19 @@ class Satellite(Base):
     bstar =  Column(Float)
     mean_motion_dot = Column(Float)
     source = Column(String)
+
+    def to_dict(self):
+        values = {}
+        for col in self.__table__.columns: # for each column in this object's __table__ attribute
+            values[col.name] = getattr(self, col.name) # Get the object's value (pulls from db)
+        return values
+    
+class Process(Base):
+    __tablename__ = "process"
+    id = Column(String, primary_key=True, index=True)
+    status = Column(String, index=True)
+    time_created = Column(DateTime(timezone=True), server_default=func.now())
+    time_updated = Column(DateTime(timezone=True), onupdate=func.now())
 
     def to_dict(self):
         values = {}
