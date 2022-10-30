@@ -21,3 +21,9 @@ class SatelliteQuery(BaseModel):
     mean_motion_dot: Optional[float]
     source: Optional[str]
 
+# Currently unused
+class Process(BaseModel):
+    id: str
+    status: str
+    time_created: Optional[str] # Datetime
+    time_updated: Optional[str] # Datetime

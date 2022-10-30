@@ -74,6 +74,7 @@ async def get_satellites(db: Session = Depends(get_db), params: SatelliteQuery =
 
     return {"satellites" : satellite_predictions}
 
+
 @app.post("/admin/refresh/", status_code=202)
 @authorize
 async def refresh_data(background_tasks : BackgroundTasks, db: Session = Depends(get_db), Authorization: Union[str, None] = Header(default=None)):

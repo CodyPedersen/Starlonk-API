@@ -1,15 +1,4 @@
 #Starlink API
 
-Epic
-    - Implement calculations of location
-        1. On-demand location calculations (DONE)
-        2. Batch calculations (Data engineering)
-            - Refresh at 5 second intervals
-            - Pull from database of pre-calculated values
-    - Implement other satellite sources (NOAA, Military, Weather)
-
-Features: 
-    - Move API auth for refresh to header (DONE)
-
-Backlog
-    - Include latitude/longitude
+- Improve prediction algorithm
+    - Fix rev_at_epoch. Assumes revolutions from a fixed value, but the current location can change the total revs +/-1

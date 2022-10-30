@@ -1,0 +1,205 @@
+
+
+        {
+            "satellite_name": "STARLINK-3003",
+            "satellite_id": "2021-059A",
+            "epoch": "2022-10-29T12:00:00.999648",
+            "mean_motion": 15.02895497,
+            "eccentricity": 0.0002055,
+            "inclination": 97.5152,
+            "ra_of_asc_node": 69.0513,
+            "arg_of_pericenter": 52.762,
+            "mean_anomaly": 356.8761,
+            "ephemeris_type": 0,
+            "classification_type": "U",
+            "norad_cat_id": 48879,
+            "element_set_no": 999,
+            "rev_at_epoch": 130,
+            "bstar": -0.00318,
+            "mean_motion_dot": -0.00042445,
+            "source": "STARLINK"
+        },
+
+
+Prediction w/ accel
+
+       {
+            "satellite_name": "STARLINK-3003",
+            "satellite_id": "2021-059A",
+            "epoch": "2022-10-30T00:00:00.999648",
+            "mean_motion": 15.02895497,
+            "eccentricity": 0.0002055,
+            "inclination": 97.5152,
+            "ra_of_asc_node": 69.0513,
+            "arg_of_pericenter": 52.762,
+            "mean_anomaly": 185.1737,
+            "ephemeris_type": 0,
+            "classification_type": "U",
+            "norad_cat_id": 48879,
+            "element_set_no": 999,
+            "rev_at_epoch": 137,
+            "bstar": -0.00318,
+            "mean_motion_dot": -0.00042445,
+            "source": "STARLINK"
+        },
+
+
+Prediction w/o accel
+
+{
+            "satellite_name": "STARLINK-3003",
+            "satellite_id": "2021-059A",
+            "epoch": "2022-10-30T00:00:00.999648",
+            "mean_motion": 15.02895497,
+            "eccentricity": 0.0002055,
+            "inclination": 97.5152,
+            "ra_of_asc_node": 69.0513,
+            "arg_of_pericenter": 52.762,
+            "mean_anomaly": 185.2119,
+            "ephemeris_type": 0,
+            "classification_type": "U",
+            "norad_cat_id": 48879,
+            "element_set_no": 999,
+            "rev_at_epoch": 137,
+            "bstar": -0.00318,
+            "mean_motion_dot": -0.00042445,
+            "source": "STARLINK"
+        },
+
+Actual
+{
+    "OBJECT_NAME": "STARLINK-3003",
+    "OBJECT_ID": "2021-059A",
+    "EPOCH": "2022-10-30T00:00:00.999648",
+    "MEAN_MOTION": 15.02941803,
+    "ECCENTRICITY": 0.0002083,
+    "INCLINATION": 97.5155,
+    "RA_OF_ASC_NODE": 69.5368,
+    "ARG_OF_PERICENTER": 56.8942,
+    "MEAN_ANOMALY": 176.2493,
+    "EPHEMERIS_TYPE": 0,
+    "CLASSIFICATION_TYPE": "U",
+    "NORAD_CAT_ID": 48879,
+    "ELEMENT_SET_NO": 999,
+    "REV_AT_EPOCH": 7472,
+    "BSTAR": -0.006511,
+    "MEAN_MOTION_DOT": -0.00086415,
+    "MEAN_MOTION_DDOT": 0
+},{
+
+-----------------------------------------
+Starlink-3096 (orig)
+
+{
+            "satellite_name": "STARLINK-3096",
+            "satellite_id": "2021-082B",
+            "epoch": "2022-10-28T21:51:57.658464",
+            "mean_motion": 14.98325664,
+            "eccentricity": 0.0003062,
+            "inclination": 69.9993,
+            "ra_of_asc_node": 110.1124,
+            "arg_of_pericenter": 254.6261,
+            "mean_anomaly": 105.4559,
+            "ephemeris_type": 0,
+            "classification_type": "U",
+            "norad_cat_id": 49131,
+            "element_set_no": 999,
+            "rev_at_epoch": 6305,
+            "bstar": 8.8218e-05,
+            "mean_motion_dot": 9.6e-06,
+            "source": "STARLINK"
+        }
+
+Prediction w/o accel
+
+{
+            "satellite_name": "STARLINK-3096",
+            "satellite_id": "2021-082B",
+            "epoch": "2022-10-29T20:17:50.189856",
+            "mean_motion": 14.98325664,
+            "eccentricity": 0.0003062,
+            "inclination": 69.9993,
+            "ra_of_asc_node": 110.1124,
+            "arg_of_pericenter": 254.6261,
+            "mean_anomaly": 1.3996,
+            "ephemeris_type": 0,
+            "classification_type": "U",
+            "norad_cat_id": 49131,
+            "element_set_no": 999,
+            "rev_at_epoch": 6319,
+            "bstar": 8.8218e-05,
+            "mean_motion_dot": 9.6e-06,
+            "source": "STARLINK"
+        },
+
+
+prediction w/ accel
+
+ {
+            "satellite_name": "STARLINK-3096",
+            "satellite_id": "2021-082B",
+            "epoch": "2022-10-29T20:17:50.189856",
+            "mean_motion": 14.98325664,
+            "eccentricity": 0.0003062,
+            "inclination": 69.9993,
+            "ra_of_asc_node": 110.1124,
+            "arg_of_pericenter": 254.6261,
+            "mean_anomaly": 1.4026,
+            "ephemeris_type": 0,
+            "classification_type": "U",
+            "norad_cat_id": 49131,
+            "element_set_no": 999,
+            "rev_at_epoch": 6319,
+            "bstar": 8.8218e-05,
+            "mean_motion_dot": 9.6e-06,
+            "source": "STARLINK"
+        }
+
+Actual
+
+{
+    "OBJECT_NAME": "STARLINK-3096",
+    "OBJECT_ID": "2021-082B",
+    "EPOCH": "2022-10-29T20:17:50.189856",
+    "MEAN_MOTION": 14.98333189,
+    "ECCENTRICITY": 0.0003002,
+    "INCLINATION": 69.9992,
+    "RA_OF_ASC_NODE": 107.7559,
+    "ARG_OF_PERICENTER": 255.049,
+    "MEAN_ANOMALY": 105.0336,
+    "EPHEMERIS_TYPE": 0,
+    "CLASSIFICATION_TYPE": "U",
+    "NORAD_CAT_ID": 49131,
+    "ELEMENT_SET_NO": 999,
+    "REV_AT_EPOCH": 6319,
+    "BSTAR": 0.0001113,
+    "MEAN_MOTION_DOT": 1.235e-5,
+    "MEAN_MOTION_DDOT": 0
+}
+
+
+-------------------------
+
+Starlink-1144
+
+  {
+            "satellite_name": "STARLINK-1144",
+            "satellite_id": "2020-001V",
+            "epoch": "2022-10-28T20:32:30.852096",
+            "mean_motion": 15.06403557,
+            "eccentricity": 0.000147,
+            "inclination": 53.054,
+            "ra_of_asc_node": 98.5866,
+            "arg_of_pericenter": 85.5384,
+            "mean_anomaly": 274.5773,
+            "ephemeris_type": 0,
+            "classification_type": "U",
+            "norad_cat_id": 44933,
+            "element_set_no": 999,
+            "rev_at_epoch": 15607,
+            "bstar": 6.5339e-05,
+            "mean_motion_dot": 6.92e-06,
+            "source": "STARLINK"
+        },
+
+
