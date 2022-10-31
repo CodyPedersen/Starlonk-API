@@ -16,30 +16,7 @@ import datetime
 from dateutil import parser
 import json
 
-''' FOR TESTING '''
 
-# sat_dict = {
-#             "satellite_name": "STARLINK-5171",
-#             "satellite_id": "2022-136AC",
-#             "epoch": "2022-10-30T00:00:00.999648",
-#             "mean_motion": 15.7892089,
-#             "eccentricity": 0.0001163,
-#             "inclination": 53.2173,
-#             "ra_of_asc_node": 101.4613,
-#             "arg_of_pericenter": 62.8253,
-#             "mean_anomaly": 58.4356,
-#             "ephemeris_type": 0,
-#             "classification_type": "U",
-#             "norad_cat_id": 54077,
-#             "element_set_no": 999,
-#             "rev_at_epoch": 198,
-#             "bstar": -0.0075201,
-#             "mean_motion_dot": -0.0120544,
-#             "source": "STARLINK"
-# }
-#sat = Satellite(**sat_dict)
-
-'''    '''
 def convert_day_percentage(epoch):
 
     total_mins = (epoch.hour * 60) + epoch.minute
@@ -52,7 +29,6 @@ def convert_bstar(bstar):
     ''' Abominable conversion to tle_bstr. Assumes bstar will never be > 1 '''
 
     b_str = str('{:.12f}'.format(bstar))
-    #print(b_str)
 
     decimal_i = None
     sig_i = None
@@ -73,7 +49,7 @@ def convert_bstar(bstar):
 
     sig_figs = sig_figs[0:5]
     tle_b_str = f"{'-' if bstar < 0 else ' '}{''.join(sig_figs) + str(decimal_i - (sig_i-1))}"
-    #print(tle_b_str)
+
     return tle_b_str
 
 
@@ -153,32 +129,29 @@ def convert_to_tle(
     epoch = f'{epoch_data}{epoch_space}'
 
     # Calculate mean motion details and following spaces
-    #format mean motion dot
     if mean_motion_dot > 0:
         mean_motion_dot = ' ' + str(format(mean_motion_dot, '.8f')).replace('0.','.')
     else:
         mean_motion_dot = str(format(mean_motion_dot, '.8f')).replace('0.','.')
     
+    #Calculate mean motion dot details and following spaces
     mean_motion_dot_data = f'{epoch}{mean_motion_dot}'
     #print("mean_motion_dot_data len", len(mean_motion_dot_data))
     mean_motion_dot_space = ''.join([' ' for i in range(45 - len(mean_motion_dot_data))])
     mean_motion_dot_all = f'{mean_motion_dot_data}{mean_motion_dot_space}'
 
-    # Calculate mean motion dot details and following spaces
+    # Calculate mean motion ddot details and following spaces
     mean_motion_ddot_data = f'{mean_motion_dot_all}{mean_motion_ddot}'
     mean_motion_ddot_space = ''.join([' ' for i in range(53 - len(mean_motion_ddot_data))])
     mean_motion_ddot = f'{mean_motion_ddot_data}{mean_motion_ddot_space}'
 
     # Calculate bstar (drag) details and following spaces AND Ephemeris (always one space)
-    
     bstar_data = f'{mean_motion_ddot}{convert_bstar(bstar)} {ephemeris_type}'
     bstar_space = ''.join([' ' for i in range(65 - len(bstar_data))])
     bstar_all = f'{bstar_data}{bstar_space}'
 
     ephemeris = f'{bstar_all}'
-
     s_unchecked = f'{ephemeris}{element_set_no}'
-
     checksum = compute_checksum(s_unchecked)
     
     s = f'{s_unchecked}{checksum}'
@@ -192,14 +165,10 @@ def convert_to_tle(
 
     # Format inclination data
     inclination_formatted = format(inclination, '.4f')
-
     inclination_data = f'{catalog}{inclination_formatted}'
     inclination_spaces = ''.join([' ' for i in range(17 - len(inclination_data))])
     #print(f'inclination_data len: {len(inclination_data)}')
     inclination_all = f'{inclination_data}{inclination_spaces}'
-    
-
-    #format ra data
 
     # Format ra_of_asc_node (add starting space if < 100)
     if (ra_of_asc_node < 10):
@@ -214,14 +183,11 @@ def convert_to_tle(
     #print(f'ra_data len: {len(ra_data)}')
     ra_all = f'{ra_data}{ra_spaces}'
 
-
     # Format eccentricity
     eccentricity_formatted = format(eccentricity, '.7f').replace('0.','')
-
     eccentricity_data = f'{ra_all}{eccentricity_formatted}'
     eccentricity_spaces = ''.join([' ' for i in range(34 - len(eccentricity_data))])
     #print(f'eccentricity len {len(eccentricity_data)}')
-    #print(f'eccentricity spaces {len(eccentricity_spaces)}')
     eccentricity_all = f'{eccentricity_data}{eccentricity_spaces}'
 
 
@@ -275,7 +241,6 @@ def convert_to_tle(
     t_unchecked = f'{mean_motion_all}{rev_at_epoch}'
     t = f'{t_unchecked}{compute_checksum(t_unchecked)}'
 
-
     return s, t
 
 
@@ -296,9 +261,6 @@ def unpack_to_tle(**kwargs):
         mean_motion = kwargs['mean_motion'],
         rev_at_epoch = kwargs['rev_at_epoch']
     )
-    # print(kwargs['satellite_name'])
-    # print(s)
-    # print(t)
     return s, t
     
 
@@ -313,11 +275,8 @@ def predict_location(satellite: Satellite, prediction_epoch: str) -> dict:
     ts = load.timescale()
     sky_sat =  EarthSatellite(s, t, satellite.satellite_name, ts)
 
-    #satrec_obj = Satrec.twoline2rv(s, t)
-
     # Replace epoch
     if (prediction_epoch == "now"):
-        #epoch = datetime.datetime.now()
         t = ts.now()
 
         # Generate now() timestamp
@@ -344,6 +303,4 @@ def predict_location(satellite: Satellite, prediction_epoch: str) -> dict:
     sat_dict['prediction'] = prediction
 
     return sat_dict
-    
-# sd = predict_location(sat, "now")
-# print(sd)
+
