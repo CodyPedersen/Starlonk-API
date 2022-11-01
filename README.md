@@ -1,4 +1,29 @@
 #Starlink API
 
-- Improve prediction algorithm
-    - Fix rev_at_epoch. Assumes revolutions from a fixed value, but the current location can change the total revs +/-1
+- Update location to provide a dict of values
+    - Parse from location data
+
+"coordinates" : {
+    "height" : x,
+
+    "latitude": {
+        "degrees" : x,
+        "minutes" : y,
+        "seconds" : z,
+    },
+    "latitude": {
+        "degrees" : x,
+        "minutes" : y,
+        "seconds" : z,
+    },
+    "ground_latitude": {
+        "degrees" : x,
+        "minutes" : y,
+        "seconds" : z,
+    },
+    "ground_longitute": {
+        "degrees" : x,
+        "minutes" : y,
+        "seconds" : z,
+    }
+}   
