@@ -14,6 +14,7 @@ from skyfield.api import load, wgs84, EarthSatellite
 from decimal import Decimal
 import datetime
 from dateutil import parser
+import numpy as np
 import json
 import re
 
@@ -265,23 +266,24 @@ def unpack_to_tle(**kwargs):
     return s, t
     
 
-def generate_loc_dict(loc_string):
-    loc_string = repr(loc_string)
-    
-    if loc_string != "<Angle nan>":
-        values = re.split(' |deg|"|\'', loc_string)
-        _,deg,_,mins,_,secs,_ = values
-    else:
-        deg,mins,secs = "nan"
+def generate_loc_dict(loc):
+    print(loc)
+    degs = mins = secs = None
+    if repr(loc) != "<Angle nan>":
+        degs, mins, secs = loc.dms()
+        
+    return {"degrees": degs, "minutes": mins, "seconds": secs}
 
-    return {"degrees": deg, "minutes": mins, "seconds": secs}
-
-
+def deNaN(loc):
+    return None if np.isnan(loc) else loc
 
 
 ''' Generate Satellite Object and Predict Location '''
 
 def predict_location(satellite: Satellite, prediction_epoch: str) -> dict:
+
+    ELEVATION_ESTIMATE_M = 550000
+
     # Get TLE of Satellite object
     s, t = unpack_to_tle(**satellite.to_dict())
 
@@ -304,16 +306,20 @@ def predict_location(satellite: Satellite, prediction_epoch: str) -> dict:
     # Get coords (Geocentric, stationary)
     geocentric_coords = sky_sat.at(t)
 
-    # Convert to lat/long
-    lat, lon = wgs84.latlon_of(geocentric_coords)
-
+    ''' Calculate and return coords'''
     sat_dict = satellite.to_dict()
 
+    # Convert to lat/long (above ground)
+    lat, lon = wgs84.latlon_of(geocentric_coords)
+
+    # Get ground-level estimate
+    #subpoint = wgs84.latlon(lat.degrees, lon.degrees, ELEVATION_ESTIMATE_M)
+    
     prediction = {
         "epoch" : prediction_epoch,
-        "latitude" : generate_loc_dict(lat),
-        "longitude": generate_loc_dict(lon)
-    }
+        "latitude" : deNaN(lat.degrees), #generate_loc_dict(lat),
+        "longitude": deNaN(lon.degrees) #generate_loc_dict(lon)
+    }   
 
     sat_dict['prediction'] = prediction
 
