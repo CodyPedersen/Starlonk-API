@@ -1,10 +1,6 @@
 
 
-''' SWAP THESE'''
 from utils.models import Satellite
-#from models import Satellite
-'''     '''
-
 from sgp4 import exporter
 from sgp4.api import Satrec, jday
 from sgp4.conveniences import dump_satrec
@@ -12,11 +8,9 @@ from pprint import pprint
 from skyfield.api import load, wgs84, EarthSatellite
 
 from decimal import Decimal
-import datetime
 from dateutil import parser
 import numpy as np
-import json
-import re
+import datetime
 
 
 def convert_day_percentage(epoch):
@@ -26,6 +20,7 @@ def convert_day_percentage(epoch):
     total_mcs = total_seconds * 1_000_000 + epoch.microsecond
 
     return float(total_mcs/86_400_000_000)
+
 
 def convert_bstar(bstar):
     ''' Abominable conversion to tle_bstr. Assumes bstar will never be > 1 '''
@@ -157,8 +152,7 @@ def convert_to_tle(
     checksum = compute_checksum(s_unchecked)
     
     s = f'{s_unchecked}{checksum}'
-
-
+    
 
     ''' Compute 't' string '''
 
@@ -192,7 +186,6 @@ def convert_to_tle(
     #print(f'eccentricity len {len(eccentricity_data)}')
     eccentricity_all = f'{eccentricity_data}{eccentricity_spaces}'
 
-
     # Format arg_of_pericenter
     if arg_of_pericenter < 10:
         arg_of_pericenter = '  ' + format(arg_of_pericenter, '.4f')
@@ -206,7 +199,6 @@ def convert_to_tle(
     arg_of_pericenter_spaces = ''.join([' ' for i in range(43 - len(arg_of_pericenter_data))])
     arg_of_pericenter_all = f'{arg_of_pericenter_data}{arg_of_pericenter_spaces}'
 
-
     # Format mean_anomaly
     if mean_anomaly < 10:
         mean_anomaly = '  ' + format(mean_anomaly, '.4f')
@@ -219,7 +211,6 @@ def convert_to_tle(
     #print(f'mean_anomaly_data len {len(mean_anomaly_data)}')
     mean_anomaly_spaces = ''.join([' ' for i in range(52 - len(mean_anomaly_data))])
     mean_anomaly_all = f'{mean_anomaly_data}{mean_anomaly_spaces}'
-
 
     #format mean_motion (10 < mean_motion < 100)
     mean_motion = format(mean_motion, '.8f')
@@ -265,14 +256,13 @@ def unpack_to_tle(**kwargs):
     )
     return s, t
     
-
-def generate_loc_dict(loc):
-    print(loc)
-    degs = mins = secs = None
-    if repr(loc) != "<Angle nan>":
-        degs, mins, secs = loc.dms()
+# def generate_loc_dict(loc):
+#     print(loc)
+#     degs = mins = secs = None
+#     if repr(loc) != "<Angle nan>":
+#         degs, mins, secs = loc.dms()
         
-    return {"degrees": degs, "minutes": mins, "seconds": secs}
+#     return {"degrees": degs, "minutes": mins, "seconds": secs}
 
 def deNaN(loc):
     return None if np.isnan(loc) else loc
@@ -281,8 +271,6 @@ def deNaN(loc):
 ''' Generate Satellite Object and Predict Location '''
 
 def predict_location(satellite: Satellite, prediction_epoch: str) -> dict:
-
-    ELEVATION_ESTIMATE_M = 550000
 
     # Get TLE of Satellite object
     s, t = unpack_to_tle(**satellite.to_dict())
@@ -305,24 +293,33 @@ def predict_location(satellite: Satellite, prediction_epoch: str) -> dict:
 
     # Get coords (Geocentric, stationary)
     geocentric_coords = sky_sat.at(t)
-
+    
     ''' Calculate and return coords'''
-    sat_dict = satellite.to_dict()
-
     # Convert to lat/long (above ground)
     lat, lon = wgs84.latlon_of(geocentric_coords)
 
     # Get ground-level estimate
     #subpoint = wgs84.latlon(lat.degrees, lon.degrees, ELEVATION_ESTIMATE_M)
+    subpoint = geocentric_coords.subpoint()
+
+    reference = satellite.to_dict()
     
     prediction = {
         "epoch" : prediction_epoch,
-        "latitude" : deNaN(lat.degrees), #generate_loc_dict(lat),
-        "longitude": deNaN(lon.degrees) #generate_loc_dict(lon)
+        "sky" : {
+            "latitude" : deNaN(lat.degrees), #generate_loc_dict(lat),
+            "longitude": deNaN(lon.degrees) #generate_loc_dict(lon)
+        },
+        "ground-level" : {
+            "latitude" : deNaN(subpoint.latitude.degrees), #subpoint.latitude, #generate_loc_dict(lat),
+            "longitude": deNaN(subpoint.longitude.degrees) #subpoint.longitude #generate_loc_dict(lon)
+        }
     }   
 
-    sat_dict['prediction'] = prediction
+    satellite_dict = {
+        "reference" : reference,
+        "prediction" : prediction
+    }
 
-
-    return sat_dict
+    return satellite_dict
 
