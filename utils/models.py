@@ -1,12 +1,8 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Float, DateTime
-from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import relationship
+from sqlalchemy import Column, Integer, String, Float, DateTime
 from sqlalchemy.sql import func
 
-''' SWAP THESE'''
 from . database import Base
-#from database import Base
-'''     '''
+
 
 class Satellite(Base):
     __tablename__ = "satellite"

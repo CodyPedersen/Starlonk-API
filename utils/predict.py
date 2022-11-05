@@ -1,13 +1,10 @@
 
 
 from utils.models import Satellite
-from sgp4 import exporter
-from sgp4.api import Satrec, jday
 from sgp4.conveniences import dump_satrec
 from pprint import pprint
 from skyfield.api import load, wgs84, EarthSatellite
 
-from decimal import Decimal
 from dateutil import parser
 import numpy as np
 import datetime

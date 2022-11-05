@@ -1,20 +1,12 @@
 import requests
 from utils.models import Satellite, Process
 from sqlalchemy.orm import Session
-# import logging
+
+from utils.log_util import log_data
 import traceback
-from datetime import datetime
 
 # logger = logging.getLogger(__name__)
 # logging.basicConfig(format='Custom Logs: %(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
-
-
-def log_data(data):
-    with open("log.txt", mode="a+") as logfile:
-        try:
-            logfile.write(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + ': ' + data + "\n")
-        except:
-            logfile.write("Failed to write\n")
 
 
 def push_process(db : Session, pid: str, status: str):
@@ -114,7 +106,7 @@ async def refresh_satellite_data(db: Session, pid: str) -> None:
     # Begin satellite data ETL
     raw_data = pull_satellite_data()
     satellite_data = format_satellite_data(raw_data, 'STARLINK')
-    log_data(f"About to parse satellite data {satellite_data}")
+    #log_data(f"About to parse satellite data {satellite_data}")
 
     # Unpack and create object for each satellite
     satellites_to_add = []

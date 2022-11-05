@@ -8,7 +8,6 @@ from utils.auth import authorize
 import utils.predict as predict
 import utils.models as models
 import uuid
-import os
 
 # Create DB tables if DNE
 models.Base.metadata.create_all(bind=engine)
@@ -94,19 +93,3 @@ async def get_process(process_id, db: Session = Depends(get_db), Authorization: 
 
 
 # uvicorn main:app --reload
-
-
-'''
-    https://www.orekit.org/site-orekit-8.0/apidocs/org/orekit/files/ccsds/Keyword.html
-    
-    epoch: The epoch is the sequential calendar date when the satellite crossed the equator in an ascending (northerly) direction
-    mean_motion: earth revolutions/day. 
-        - Period (minutes) = (24*60)/mean_motion
-    eccentricity: how far away from a perfect circle is the orbit around the earth
-    inclination (degrees): measures the tilt of an object's orbit around earth's equator (https://en.wikipedia.org/wiki/Orbital_inclination)
-    ra_of_asc_node (degrees): Right Ascension of the Ascending Node
-    arg_of_pericenter (degrees): 
-    mean_anomaly (degrees): 
-    bstar: drag calculation
-
-'''
