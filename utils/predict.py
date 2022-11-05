@@ -15,6 +15,7 @@ from decimal import Decimal
 import datetime
 from dateutil import parser
 import json
+import re
 
 
 def convert_day_percentage(epoch):
@@ -264,6 +265,19 @@ def unpack_to_tle(**kwargs):
     return s, t
     
 
+def generate_loc_dict(loc_string):
+    loc_string = repr(loc_string)
+    
+    if loc_string != "<Angle nan>":
+        values = re.split(' |deg|"|\'', loc_string)
+        _,deg,_,mins,_,secs,_ = values
+    else:
+        deg,mins,secs = "nan"
+
+    return {"degrees": deg, "minutes": mins, "seconds": secs}
+
+
+
 
 ''' Generate Satellite Object and Predict Location '''
 
@@ -293,14 +307,16 @@ def predict_location(satellite: Satellite, prediction_epoch: str) -> dict:
     # Convert to lat/long
     lat, lon = wgs84.latlon_of(geocentric_coords)
 
+    sat_dict = satellite.to_dict()
+
     prediction = {
         "epoch" : prediction_epoch,
-        "latitude" : str(lat),
-        "longitude": str(lon),
+        "latitude" : generate_loc_dict(lat),
+        "longitude": generate_loc_dict(lon)
     }
 
-    sat_dict = satellite.to_dict()
     sat_dict['prediction'] = prediction
+
 
     return sat_dict
 

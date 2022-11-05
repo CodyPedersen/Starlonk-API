@@ -3,9 +3,9 @@
 - Update location to provide a dict of values
     - Parse from location data
 
+
 "coordinates" : {
     "height" : x,
-
     "latitude": {
         "degrees" : x,
         "minutes" : y,
