@@ -11,6 +11,7 @@ import datetime
 
 
 def convert_day_percentage(epoch):
+    """Convert a datetime object to decimal TLE format"""
 
     total_mins = (epoch.hour * 60) + epoch.minute
     total_seconds = (total_mins * 60) + epoch.second
@@ -20,7 +21,7 @@ def convert_day_percentage(epoch):
 
 
 def convert_bstar(bstar):
-    ''' Abominable conversion to tle_bstr. Assumes bstar will never be > 1 '''
+    """Abominable conversion to TLEs b_star format. Assumes bstar will never be > 1"""
 
     b_str = str('{:.12f}'.format(bstar))
 
@@ -48,6 +49,8 @@ def convert_bstar(bstar):
 
 
 def compute_checksum(tle_line):
+    """Compute checksum per TLE spec"""
+
     sum = 0
     for char in tle_line:
         if char.isdigit():
@@ -58,8 +61,10 @@ def compute_checksum(tle_line):
     return sum % 10
 
 
-''' Get Satellite attributes from Satrec object'''
+
 def get_attributes(sat):
+    """Get Satellite attributes from Satrec object"""
+
     attr_str = dump_satrec(sat)
     attr_dict = {}
 
@@ -88,6 +93,8 @@ def convert_to_tle(
     mean_motion,
     rev_at_epoch
 ):
+    """Converts from Starlonk satellite data format (modified NORAD) to TLE format"""
+
     # Launch data from object id
     l_yr = satellite_id[2:4]
     l_num = satellite_id[5:]
@@ -103,7 +110,7 @@ def convert_to_tle(
     ephemeris_type = '0'
 
 
-    ''' Compute 's' string '''
+    ''' Compute first string per TLE format '''
 
     # Calculate classification details and following spaces
     cat_class = f'1 {norad_cat_id}{classification_type}'
@@ -151,7 +158,7 @@ def convert_to_tle(
     s = f'{s_unchecked}{checksum}'
 
 
-    ''' Compute 't' string '''
+    ''' Compute second string per TLE format '''
 
     # Always assuming 2 spaces after catalog id
     catalog = f'2 {norad_cat_id}  '
@@ -235,6 +242,8 @@ def convert_to_tle(
 
 
 def unpack_to_tle(**kwargs):
+    """Unpacks satellite data for use in convert_to_tle"""
+
     s, t = convert_to_tle(
         norad_cat_id = kwargs['norad_cat_id'],
         classification_type = kwargs['classification_type'],
@@ -265,9 +274,8 @@ def deNaN(loc):
     return None if np.isnan(loc) else loc
 
 
-''' Generate Satellite Object and Predict Location '''
-
 def predict_location(satellite: Satellite, prediction_epoch: str) -> dict:
+    """Generate satellite object from data and predict location (lat./lon.) for a given epoch"""
 
     # Get TLE of Satellite object
     s, t = unpack_to_tle(**satellite.to_dict())

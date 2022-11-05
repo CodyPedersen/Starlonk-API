@@ -5,9 +5,6 @@ from sqlalchemy.orm import Session
 from utils.log_util import log_data
 import traceback
 
-# logger = logging.getLogger(__name__)
-# logging.basicConfig(format='Custom Logs: %(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
-
 
 def push_process(db : Session, pid: str, status: str):
     print("pushing process to db")
@@ -27,7 +24,6 @@ def push_process(db : Session, pid: str, status: str):
     else:
         process = Process(**process_data)
         db.add(process)
-
     
     db.commit()
     print("pushed process to db")
@@ -70,23 +66,18 @@ def pull_satellite_data() -> list:
     # Pull STARLINK satellites
     starlink = 'https://celestrak.org/NORAD/elements/gp.php?GROUP=starlink&FORMAT=json-pretty'
     
-    log_data("1 from NORAD")
-    print("Pulling data from NORAD")
+    log_data("Pulling data from NORAD")
     try:
         satellite_response = requests.get(url=starlink)
         log_data(f"satellite_response{satellite_response}")
     except:
         log_data("Unable to complete request")
-
         log_data(traceback.print_exc())
-        log_data(traceback.print_exception())
 
     log_data("Parsing data from NORAD")
-    print("Parsing data from NORAD")
     try:
         raw_data = satellite_response.json()
     except:
-        log_data("Unable to parse response")
         log_data(traceback.print_exc())
         log_data(traceback.print_exception())
 
@@ -120,8 +111,6 @@ async def refresh_satellite_data(db: Session, pid: str) -> None:
             satellite = Satellite(**satellite_json)
             satellites_to_add.append(satellite)
 
-    log_data("About to add satellite data")
     db.add_all(satellites_to_add)
-    log_data("About to commit satellite data")
     db.commit()
     push_process(db, pid, "complete")

@@ -14,7 +14,6 @@ models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-# Create a DB session for the call
 def get_db():
     db = SessionLocal()
     try:
@@ -25,11 +24,14 @@ def get_db():
 
 @app.get("/")
 async def get_home():
-    return {"message" : "Starlink API. See <this site>/docs"}
+    """Currently inactive"""
+    return {"message" : "Starlink API. See /docs"}
 
 
 @app.get("/satellites/")
 async def get_satellites(db: Session = Depends(get_db), params: SatelliteQuery = Depends()):
+    """Return all satellites, filtered on any satellite attribute"""
+
     param_dict = params.dict(exclude_none=True)
 
     query = db.query(models.Satellite) # Not query.all() as that returns a list
@@ -44,7 +46,9 @@ async def get_satellites(db: Session = Depends(get_db), params: SatelliteQuery =
 
    
 @app.get("/predict/")
-async def get_satellites(db: Session = Depends(get_db), params: SatelliteQuery = Depends()):
+async def predict_satellites(db: Session = Depends(get_db), params: SatelliteQuery = Depends()):
+    """Predict the location of a single satellite for a given epoch"""
+
     param_dict = params.dict(exclude_none=True)
     satellite_id = param_dict['satellite_id']
     epoch = param_dict['epoch']
@@ -59,6 +63,8 @@ async def get_satellites(db: Session = Depends(get_db), params: SatelliteQuery =
 
 @app.get("/bulk_predict/")
 async def get_satellites(db: Session = Depends(get_db), params: SatelliteQuery = Depends()):
+    """Predict all satellite location for a given epoch"""
+
     param_dict = params.dict(exclude_none=True)
     epoch = param_dict['epoch']
 
@@ -77,16 +83,23 @@ async def get_satellites(db: Session = Depends(get_db), params: SatelliteQuery =
 @app.post("/admin/refresh/", status_code=202)
 @authorize
 async def refresh_data(background_tasks : BackgroundTasks, db: Session = Depends(get_db), Authorization: Union[str, None] = Header(default=None)):
+    """Pull data from NORAD data sets and update DB with data"""
+
     pid = str(uuid.uuid4())
     background_tasks.add_task(refresh_satellite_data, db, pid)
     log_data("Refreshed satellite data")
-    return {"status": "accepted", "pid" : pid}
+
+    return {
+        "status": "accepted", 
+        "pid" : pid
+    }
 
 
 @app.get("/admin/process/{process_id}")
 @authorize
 async def get_process(process_id, db: Session = Depends(get_db), Authorization: Union[str, None] = Header(default=None)):
-    print(Authorization)
+    """Get the status given process (refresh)"""
+    
     process = db.query(models.Process).filter(models.Process.id == process_id).one()
     return {"process" : process.to_dict()}
     
