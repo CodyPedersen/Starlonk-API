@@ -152,7 +152,7 @@ def convert_to_tle(
     checksum = compute_checksum(s_unchecked)
     
     s = f'{s_unchecked}{checksum}'
-    
+
 
     ''' Compute 't' string '''
 
@@ -307,12 +307,12 @@ def predict_location(satellite: Satellite, prediction_epoch: str) -> dict:
     prediction = {
         "epoch" : prediction_epoch,
         "sky" : {
-            "latitude" : deNaN(lat.degrees), #generate_loc_dict(lat),
-            "longitude": deNaN(lon.degrees) #generate_loc_dict(lon)
+            "latitude" : deNaN(lat.degrees),
+            "longitude": deNaN(lon.degrees) 
         },
         "ground-level" : {
-            "latitude" : deNaN(subpoint.latitude.degrees), #subpoint.latitude, #generate_loc_dict(lat),
-            "longitude": deNaN(subpoint.longitude.degrees) #subpoint.longitude #generate_loc_dict(lon)
+            "latitude" : deNaN(subpoint.latitude.degrees), 
+            "longitude": deNaN(subpoint.longitude.degrees) 
         }
     }   
 
