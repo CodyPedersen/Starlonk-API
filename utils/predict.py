@@ -1,6 +1,5 @@
-
-
 from utils.models import Satellite
+from utils.log_util import log_data
 from sgp4.conveniences import dump_satrec
 from pprint import pprint
 from skyfield.api import load, wgs84, EarthSatellite
@@ -280,16 +279,21 @@ def predict_location(satellite: Satellite, prediction_epoch: str) -> dict:
     # Get TLE of Satellite object
     s, t = unpack_to_tle(**satellite.to_dict())
 
+    # log data
+    log_data(satellite.satellite_name, date=False, stdout=False)
+    log_data(s, date=False, stdout=False)
+    log_data(t, date=False, stdout=False)
+
     # Generate skyfield satellite object
     ts = load.timescale()
     sky_sat =  EarthSatellite(s, t, satellite.satellite_name, ts)
 
     # Replace epoch
     if (prediction_epoch == "now"):
-        t = ts.now()
+        now_dt = datetime.datetime.utcnow()
+        t = ts.utc(int(now_dt.year), int(now_dt.month), int(now_dt.day), int(now_dt.hour), int(now_dt.minute), int(now_dt.second))
 
         # Generate now() timestamp
-        now_dt = datetime.datetime.now()
         prediction_epoch = now_dt.isoformat()
 
     else:

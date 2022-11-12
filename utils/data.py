@@ -34,25 +34,12 @@ def format_satellite_data(satellite_json: list, source: str) -> list:
 
     # Change satellite keys to a more readable format
     for raw_satellite in satellite_json:
-        satellite = {}
 
         # Modify keys to Satellite model standards
-        satellite['satellite_name'] = raw_satellite['OBJECT_NAME']
-        satellite['satellite_id'] = raw_satellite['OBJECT_ID']
-        satellite['epoch'] = raw_satellite['EPOCH']
-        satellite['mean_motion'] = raw_satellite['MEAN_MOTION']
-        satellite['eccentricity'] = raw_satellite['ECCENTRICITY']
-        satellite['inclination'] = raw_satellite['INCLINATION']
-        satellite['ra_of_asc_node'] = raw_satellite['RA_OF_ASC_NODE']
-        satellite['arg_of_pericenter'] = raw_satellite['ARG_OF_PERICENTER']
-        satellite['mean_anomaly'] = raw_satellite['MEAN_ANOMALY']
-        satellite['ephemeris_type'] = raw_satellite['EPHEMERIS_TYPE']
-        satellite['classification_type'] = raw_satellite['CLASSIFICATION_TYPE']
-        satellite['norad_cat_id'] = raw_satellite['NORAD_CAT_ID']
-        satellite['element_set_no'] = raw_satellite['ELEMENT_SET_NO']
-        satellite['rev_at_epoch'] = raw_satellite['REV_AT_EPOCH']
-        satellite['bstar'] =  float(raw_satellite['BSTAR'])
-        satellite['mean_motion_dot'] = float(raw_satellite['MEAN_MOTION_DOT'])
+        satellite = {
+            key.replace('OBJECT', 'satellite').lower():value for (key,value) in raw_satellite.items()
+        }
+        del satellite['mean_motion_ddot']
         satellite['source'] = source
 
         # Push `clean` satellite to `cleaned_data`

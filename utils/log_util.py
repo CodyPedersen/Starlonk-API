@@ -1,11 +1,15 @@
 from functools import wraps
 from datetime import datetime
 
-def log_data(data):
+def log_data(data, date=True, stdout=True):
     with open("log.txt", mode="a+") as logfile:
+        date_log = ''
+        if date:
+            date_log = datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + ': '
         try:
-            print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + ': ' + data + "\n")
-            logfile.write(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + ': ' + data + "\n")
+            logfile.write(date_log + data + "\n")
+            if stdout:
+                print(date_log + data + "\n")
         except:
             logfile.write("Failed to write to log file\n")
 
