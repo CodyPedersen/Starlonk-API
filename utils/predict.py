@@ -260,14 +260,7 @@ def unpack_to_tle(**kwargs):
         rev_at_epoch = kwargs['rev_at_epoch']
     )
     return s, t
-    
-# def generate_loc_dict(loc):
-#     print(loc)
-#     degs = mins = secs = None
-#     if repr(loc) != "<Angle nan>":
-#         degs, mins, secs = loc.dms()
-        
-#     return {"degrees": degs, "minutes": mins, "seconds": secs}
+
 
 def deNaN(loc):
     return None if np.isnan(loc) else loc
@@ -288,40 +281,37 @@ def predict_location(satellite: Satellite, prediction_epoch: str) -> dict:
     ts = load.timescale()
     sky_sat =  EarthSatellite(s, t, satellite.satellite_name, ts)
 
+    print(satellite.satellite_name)
     # Replace epoch
     if (prediction_epoch == "now"):
         now_dt = datetime.datetime.utcnow()
         t = ts.utc(int(now_dt.year), int(now_dt.month), int(now_dt.day), int(now_dt.hour), int(now_dt.minute), int(now_dt.second))
-
+        
         # Generate now() timestamp
         prediction_epoch = now_dt.isoformat()
 
     else:
         epoch = parser.parse(prediction_epoch)
         t = ts.utc(int(epoch.year), int(epoch.month), int(epoch.day), int(epoch.hour), int(epoch.minute), int(epoch.second))
-
-    # Get coords (Geocentric, stationary)
+  
+    ''' Calculate coords & data points '''
     geocentric_coords = sky_sat.at(t)
+    lat = geocentric_coords.subpoint().latitude
+    lon = geocentric_coords.subpoint().longitude
+    elevation_km = geocentric_coords.subpoint().elevation.km
+    geo_pos_km = geocentric_coords.position.km.tolist()
+    velocity_m_per_s = geocentric_coords.velocity.m_per_s
     
-    ''' Calculate and return coords'''
-    # Convert to lat/long (above ground)
-    lat, lon = wgs84.latlon_of(geocentric_coords)
-
-    # Get ground-level estimate
-    #subpoint = wgs84.latlon(lat.degrees, lon.degrees, ELEVATION_ESTIMATE_M)
-    subpoint = geocentric_coords.subpoint()
-
     reference = satellite.to_dict()
-    
+
     prediction = {
         "epoch" : prediction_epoch,
-        "sky" : {
+        "elevation" : deNaN(elevation_km),
+        "geocentric_coords" : [deNaN(coord) for coord in geo_pos_km],
+        "geo_velocity_m_per_s": [deNaN(component) for component in velocity_m_per_s],
+        "subpoint_coordinates" : {
             "latitude" : deNaN(lat.degrees),
             "longitude": deNaN(lon.degrees) 
-        },
-        "ground-level" : {
-            "latitude" : deNaN(subpoint.latitude.degrees), 
-            "longitude": deNaN(subpoint.longitude.degrees) 
         }
     }   
 
