@@ -271,6 +271,8 @@ def predict_location(satellite: Satellite, prediction_epoch: str) -> dict:
 
     # Get TLE of Satellite object
     s, t = unpack_to_tle(**satellite.to_dict())
+    l1 = s
+    l2 = t
 
     # log data
     log_data(satellite.satellite_name, date=False, stdout=False)
@@ -281,7 +283,6 @@ def predict_location(satellite: Satellite, prediction_epoch: str) -> dict:
     ts = load.timescale()
     sky_sat =  EarthSatellite(s, t, satellite.satellite_name, ts)
 
-    print(satellite.satellite_name)
     # Replace epoch
     if (prediction_epoch == "now"):
         now_dt = datetime.datetime.utcnow()
@@ -302,6 +303,12 @@ def predict_location(satellite: Satellite, prediction_epoch: str) -> dict:
     geo_pos_km = geocentric_coords.position.km.tolist()
     velocity_m_per_s = geocentric_coords.velocity.m_per_s
     
+    # debug
+    if(np.isnan(lat.degrees)):
+        print(satellite.satellite_name, satellite.satellite_id)
+        print(l1)
+        print(l2)
+
     reference = satellite.to_dict()
 
     prediction = {

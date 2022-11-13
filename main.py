@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Depends, Header, BackgroundTasks, status
 from typing import Union
+from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
 from utils.database import engine, SessionLocal
 from utils.data import refresh_satellite_data, log_data
@@ -7,6 +8,7 @@ from utils.schemas import SatelliteQuery
 from utils.auth import authorize
 import utils.predict as predict
 import utils.models as models
+
 import uuid
 
 # Create DB tables if DNE
@@ -102,7 +104,24 @@ async def get_process(process_id, db: Session = Depends(get_db), Authorization: 
     
     process = db.query(models.Process).filter(models.Process.id == process_id).one()
     return {"process" : process.to_dict()}
-    
+
+
+@app.get("/admin/cleanup")
+@authorize
+async def clean_old(db: Session = Depends(get_db), Authorization: Union[str, None] = Header(default=None)):
+    """Remove satellites that have not been updated in two weeks"""
+
+    utc_cutoff = (datetime.utcnow() - timedelta(days=14)).isoformat()
+
+    # Find satellites
+    satellites = db.query(models.Satellite).filter(models.Satellite.epoch < utc_cutoff).all()
+    deletes = [satellite.to_dict()["satellite_name"] for satellite in satellites]
+
+    # Delete satellites
+    satellites = db.query(models.Satellite).filter(models.Satellite.epoch < utc_cutoff).delete()
+    db.commit()
+
+    return {"deleted" : deletes}
 
 
 # uvicorn main:app --reload

@@ -1,3 +1,5 @@
-#Starlink API
+# Starlink API
 
--- Resolve NaN issue. Assuming related to the TLE extractiton
+# Use the same timestamp when bulk predicting
+# Delete satellites where time since update > some delta
+# implement mean_motion_ddot

@@ -83,7 +83,7 @@ async def refresh_satellite_data(db: Session, pid: str) -> None:
 
     # Begin satellite data ETL
     raw_data = pull_satellite_data()
-    satellite_data = format_satellite_data(raw_data, 'STARLINK')
+    satellite_data = format_satellite_data(raw_data, source='STARLINK')
     #log_data(f"About to parse satellite data {satellite_data}")
 
     # Unpack and create object for each satellite
