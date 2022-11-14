@@ -1,0 +1,48 @@
+schema {
+    query: Query
+    mutation: Mutation
+}
+
+
+type Satellite {
+    satellite_id: String!
+    satellite_name: String!
+    epoch: String!
+    mean_motion: Float!
+    eccentricity: Float!
+    inclination: Float!
+    ra_of_asc_node: Float!
+    arg_of_pericenter: Float!
+    mean_anomaly: Float!
+    ephemeris_type: Int!
+    classification_type: String!
+    norad_cat_id: Int!
+    element_set_no: Int!
+    rev_at_epoch: Int!
+    bstar: Float!
+    mean_motion_dot: Float!
+    source: String
+}
+
+type SatelliteResult {
+    success: Boolean
+    errors: [String]
+    satellite: Satellite
+
+}
+
+type SatellitesResult {
+    success: Boolean!
+    errors: [String]
+    satellites: [Satellite]
+}
+
+
+type Query {
+    satellite_by_id(satellite_id: String!): SatelliteResult!
+    satellites: SatellitesResult!
+}
+
+type Mutation {
+    placeholder: Satellite
+}

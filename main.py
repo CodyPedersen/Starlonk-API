@@ -1,13 +1,19 @@
-from fastapi import FastAPI, Depends, Header, BackgroundTasks, status
+from fastapi import FastAPI, Request, Depends, Header, BackgroundTasks, status
 from typing import Union
 from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
-from utils.database import engine, SessionLocal
+from utils.database import engine, get_db
 from utils.data import refresh_satellite_data, log_data
 from utils.schemas import SatelliteQuery
 from utils.auth import authorize
 import utils.predict as predict
 import utils.models as models
+import json
+
+# GraphQL
+from ariadne import graphql_sync
+from ariadne.constants import PLAYGROUND_HTML
+from gql.initialize_gql import query, mutation, type_defs, schema
 
 import uuid
 
@@ -16,12 +22,7 @@ models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+
 
 
 @app.get("/")
@@ -106,9 +107,9 @@ async def get_process(process_id, db: Session = Depends(get_db), Authorization: 
     return {"process" : process.to_dict()}
 
 
-@app.get("/admin/cleanup")
+@app.post("/admin/purge")
 @authorize
-async def clean_old(db: Session = Depends(get_db), Authorization: Union[str, None] = Header(default=None)):
+async def purge_old(db: Session = Depends(get_db), Authorization: Union[str, None] = Header(default=None)):
     """Remove satellites that have not been updated in two weeks"""
 
     utc_cutoff = (datetime.utcnow() - timedelta(days=14)).isoformat()
@@ -122,6 +123,30 @@ async def clean_old(db: Session = Depends(get_db), Authorization: Union[str, Non
     db.commit()
 
     return {"deleted" : deletes}
+
+
+''' GraphQL Endpoints '''
+
+# @app.get("/graphql/")
+# async def graphql_playground():
+#     return PLAYGROUND_HTML, 200
+
+
+@app.post("/graphql/")
+async def graphql_fn(req: Request):
+    data = await req.json() #JSON request data
+    #request_json = data.decode('ascii')
+    print(data)
+    success, result = graphql_sync( #result is simply the JSON response
+        schema,
+        data,
+        context_value=data,
+        debug=app.debug
+    ) 
+    #status_code = 200 if success else 400
+    return result
+
+
 
 
 # uvicorn main:app --reload
