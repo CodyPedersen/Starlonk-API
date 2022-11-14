@@ -18,4 +18,5 @@ def satellite_by_id_resolver(obj, info, satellite_id):
             "success": False,
             "errors": ["Satellite item matching {id} not found"]
         }
+    db.close()
     return payload

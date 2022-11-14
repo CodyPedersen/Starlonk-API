@@ -25,7 +25,7 @@ type Satellite {
 }
 
 type SatelliteResult {
-    success: Boolean
+    success: Boolean!
     errors: [String]
     satellite: Satellite
 

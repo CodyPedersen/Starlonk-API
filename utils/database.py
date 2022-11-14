@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 import os
 
 
+#  Generate db session (for use with FastAPI)
 def get_db():
     db = SessionLocal()
     try:

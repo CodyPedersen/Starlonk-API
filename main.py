@@ -13,7 +13,7 @@ import json
 # GraphQL
 from ariadne import graphql_sync
 from ariadne.constants import PLAYGROUND_HTML
-from gql.initialize_gql import query, mutation, type_defs, schema
+from gql import query, mutation, type_defs, schema
 
 import uuid
 
@@ -137,7 +137,9 @@ async def graphql_fn(req: Request):
     data = await req.json() #JSON request data
     #request_json = data.decode('ascii')
     print(data)
-    success, result = graphql_sync( #result is simply the JSON response
+
+    # Use executable schema with user GQL query to generate result
+    _ , result = graphql_sync( 
         schema,
         data,
         context_value=data,
