@@ -4,8 +4,8 @@ from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
 from utils.database import engine, get_db
 from utils.data import refresh_satellite_data, log_data
-from utils.schemas import SatelliteQuery
-from utils.auth import authorize
+from api.schemas import SatelliteQuery
+from api.auth import authorize
 import utils.predict as predict
 import utils.models as models
 import json
