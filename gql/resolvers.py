@@ -1,6 +1,7 @@
 from utils.models import Satellite, Process
 from utils.database import *
 from datetime import datetime
+from utils.predict import predict_location
 
 #@query.field("satellite_by_id")
 def satellite_by_id_resolver(obj, info, satellite_id):
@@ -91,3 +92,45 @@ def processes_resolver(obj, info):
 
     db.close()
     return payload
+
+
+def satellite_prediction_resolver(obj, info, satellite_id, prediction_epoch):
+    db = SessionLocal()
+
+    try:
+        satellite = db.query(Satellite).filter(Satellite.satellite_id == satellite_id).first()
+        satellite_prediction = predict_location(satellite, prediction_epoch)
+        payload = {
+            "success" : True,
+            "reference": satellite_prediction['reference'],
+            "prediction": satellite_prediction['prediction']
+        }
+    except Exception as e:
+        payload = {
+            "success": False,
+            "errors": [f"Unable to retrieve processes: {str(e)}"]
+        }
+    print(payload)
+    db.close()
+    return payload
+
+
+# def satellites_prediction_resolver(obj, info, prediction_epoch):
+#     db = SessionLocal()
+
+#     try:
+#         all_satellites = db.query(Satellite).all()
+
+#         # Get location prediction for all satellites
+#         satellite_predictions = []
+#         for satellite in all_satellites:
+#             satellite_prediction = predict_location(satellite, prediction_epoch)
+#             satellite_predictions.append(satellite_prediction)
+
+#     except:
+
+
+#     payload = return {"satellites" : satellite_predictions}
+
+#     db.close()
+#     return payload

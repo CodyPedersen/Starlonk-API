@@ -3,7 +3,7 @@ schema {
     mutation: Mutation
 }
 
-
+### Satellite Schema ###
 type Satellite {
     satellite_id: String!
     satellite_name: String!
@@ -24,24 +24,25 @@ type Satellite {
     source: String
 }
 
-type Process {
-    id: String!
-    status: String!
-    time_created: String!
-    time_updated: String!
-}
-
 type SatelliteResult {
     success: Boolean!
     errors: [String]
     satellite: Satellite
-
 }
 
 type SatellitesResult {
     success: Boolean!
     errors: [String]
     satellites: [Satellite]
+}
+
+
+###  Process Schema ###
+type Process {
+    id: String!
+    status: String!
+    time_created: String!
+    time_updated: String!
 }
 
 type ProcessResult {
@@ -56,6 +57,31 @@ type ProcessesResult {
     processes: [Process]
 }
 
+
+### Prediction Schema ###
+
+type Subpoint {
+    latitude: Float
+    longitude: Float
+}
+
+type Prediction {
+    epoch: String!
+    elevation: Float
+    geocentric_coords: [Float]
+    geo_velocity_m_per_s: [Float]
+    subpoint_coordinates: Subpoint
+}
+
+type SatellitePrediction {
+    reference: Satellite!
+    prediction: Prediction!
+    success: Boolean!
+    errors: [String]
+}
+
+
+
 type Query {
     satellite_by_id(satellite_id: String!): SatelliteResult!
     satellites: SatellitesResult!
@@ -64,5 +90,5 @@ type Query {
 }
 
 type Mutation {
-    placeholder: Satellite
+    satellite_prediction(satellite_id: String!, prediction_epoch: String!): SatellitePrediction
 }
