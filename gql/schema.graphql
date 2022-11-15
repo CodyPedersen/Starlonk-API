@@ -50,10 +50,17 @@ type ProcessResult {
     process: Process!
 }
 
+type ProcessesResult {
+    success: Boolean!
+    errors: [String]
+    processes: [Process]
+}
+
 type Query {
     satellite_by_id(satellite_id: String!): SatelliteResult!
     satellites: SatellitesResult!
     process_by_id(process_id: String!): ProcessResult!
+    processes: ProcessesResult!
 }
 
 type Mutation {

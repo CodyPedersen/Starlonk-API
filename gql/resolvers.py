@@ -59,6 +59,35 @@ def process_by_id_resolver(obj, info, process_id):
             "success": False,
             "errors": ["Process item matching {id} not found", str(e)]
         }
+
     db.close()
-    print(payload)
+    return payload
+
+def processes_resolver(obj, info):
+    db = SessionLocal()
+
+    try:
+        processes_dt = db.query(Process).all()
+        #print(processes_dt)
+
+        processes = []
+        for process_obj in processes_dt:
+            process_dict = process_obj.to_dict()
+
+            process_dict['time_created'] = process_dict['time_created'].isoformat()
+            process_dict['time_updated'] = process_dict['time_updated'].isoformat()
+
+            processes.append(process_dict)
+
+        payload = {
+            "success" : True,
+            "processes": processes
+        }
+    except Exception as e:
+        payload = {
+            "success": False,
+            "errors": [f"Unable to retrieve processes: {str(e)}"]
+        }
+
+    db.close()
     return payload
