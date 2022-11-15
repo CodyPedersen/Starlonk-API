@@ -115,22 +115,30 @@ def satellite_prediction_resolver(obj, info, satellite_id, prediction_epoch):
     return payload
 
 
-# def satellites_prediction_resolver(obj, info, prediction_epoch):
-#     db = SessionLocal()
+def bulk_prediction_resolver(obj, info, prediction_epoch):
+    db = SessionLocal()
 
-#     try:
-#         all_satellites = db.query(Satellite).all()
+    try:
+        all_satellites = db.query(Satellite).all()
 
-#         # Get location prediction for all satellites
-#         satellite_predictions = []
-#         for satellite in all_satellites:
-#             satellite_prediction = predict_location(satellite, prediction_epoch)
-#             satellite_predictions.append(satellite_prediction)
+        # Get location prediction for all satellites
+        satellite_predictions = []
+        for satellite in all_satellites:
+            satellite_prediction = predict_location(satellite, prediction_epoch)
+            satellite_predictions.append(satellite_prediction)
+        
+        payload = {
+            "success" : True,
+            "prediction": satellite_predictions
+        }
+        print(satellite_prediction)
+    except Exception as e:
+        payload = {
+            "success": False,
+            "errors": [f"Unable to retrieve processes: {str(e)}"]
+        }
 
-#     except:
+    db.close()
+    return payload
 
-
-#     payload = return {"satellites" : satellite_predictions}
-
-#     db.close()
-#     return payload
+    

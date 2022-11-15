@@ -80,6 +80,17 @@ type SatellitePrediction {
     errors: [String]
 }
 
+type PredictionReference {
+    reference: Satellite!
+    prediction: Prediction!
+}
+
+type SatellitesPrediction {
+    prediction: [PredictionReference]
+    success: Boolean!
+    errors: [String]
+}
+
 
 
 type Query {
@@ -91,4 +102,5 @@ type Query {
 
 type Mutation {
     satellite_prediction(satellite_id: String!, prediction_epoch: String!): SatellitePrediction
+    bulk_prediction(prediction_epoch: String!): SatellitesPrediction
 }
