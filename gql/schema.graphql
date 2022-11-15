@@ -24,6 +24,13 @@ type Satellite {
     source: String
 }
 
+type Process {
+    id: String!
+    status: String!
+    time_created: String!
+    time_updated: String!
+}
+
 type SatelliteResult {
     success: Boolean!
     errors: [String]
@@ -37,9 +44,16 @@ type SatellitesResult {
     satellites: [Satellite]
 }
 
+type ProcessResult {
+    success: Boolean!
+    errors: [String]
+    process: Process!
+}
+
 type Query {
     satellite_by_id(satellite_id: String!): SatelliteResult!
     satellites: SatellitesResult!
+    process_by_id(process_id: String!): ProcessResult!
 }
 
 type Mutation {
