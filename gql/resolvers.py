@@ -131,7 +131,7 @@ def bulk_prediction_resolver(obj, info, prediction_epoch):
             "success" : True,
             "prediction": satellite_predictions
         }
-        print(satellite_prediction)
+        #print(satellite_prediction)
     except Exception as e:
         payload = {
             "success": False,

@@ -92,7 +92,6 @@ type SatellitesPrediction {
 }
 
 
-
 type Query {
     satellite_by_id(satellite_id: String!): SatelliteResult!
     satellites: SatellitesResult!
