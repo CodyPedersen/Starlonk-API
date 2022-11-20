@@ -46,7 +46,7 @@ class Process(Base):
 class Prediction(Base):
     __tablename__ = "prediction"
     satellite_name = Column(String, index=True)
-    satellite_id = Column(String, unique=True, primary_key=True)
+    satellite_id = Column(String, primary_key=True)
     epoch = Column(DateTime, primary_key=True)
     elevation = Column(Float)
     geocentric_coords = Column(ARRAY(Float))
