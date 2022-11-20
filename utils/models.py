@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, DateTime
+from sqlalchemy import Column, Integer, String, Float, DateTime, ARRAY
 from sqlalchemy.sql import func
 
 from . database import Base
@@ -36,6 +36,23 @@ class Process(Base):
     status = Column(String, index=True)
     time_created = Column(DateTime(timezone=True), server_default=func.now())
     time_updated = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+    def to_dict(self):
+        values = {}
+        for col in self.__table__.columns: # for each column in this object's __table__ attribute
+            values[col.name] = getattr(self, col.name) # Get the object's value (pulls from db)
+        return values
+    
+class Prediction(Base):
+    __tablename__ = "prediction"
+    satellite_name = Column(String, index=True)
+    satellite_id = Column(String, unique=True, primary_key=True)
+    epoch = Column(DateTime, primary_key=True)
+    elevation = Column(Float)
+    geocentric_coords = Column(ARRAY(Float))
+    geo_velocity_m_per_s = Column(ARRAY(Float))
+    latitude = Column(Float)
+    longitude = Column(Float)
 
     def to_dict(self):
         values = {}
