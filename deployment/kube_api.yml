@@ -1,10 +1,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: api-dep
+  name: starlonk-api
   labels:
     app: starlonk-api
-    app.kubernetes.io/name: starlonk-api
 spec:
   replicas: 1
   selector:
@@ -17,8 +16,7 @@ spec:
     spec:
       containers:
       - name: starlonk-api
-        image: starlonk-api-init:latest
-        imagePullPolicy: Never
+        image: gitprotean/starlonk-api-init:latest
         ports:
         - containerPort: 80
         env:
@@ -38,14 +36,15 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: starlonk-api-svc
+  name: starlonk-api
   labels:
-    app.kubernetes.io/name: starlonk-api-svc
+    app: starlonk-api
 spec:
   selector:
-    app.kubernetes.io/name: starlonk-api
+    app: starlonk-api
   ports:
     - name: starlonk-api-svc-port
       protocol: TCP
       port: 80
       targetPort: 80
+  type: NodePort

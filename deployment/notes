@@ -1,0 +1,6 @@
+
+# To do:
+  # Currently using NodePort for the api to access the service, but will implement ingrses
+  # Add volumes/claims for postgres db
+  
+# Updated to use dockerhub - may find a better alternative

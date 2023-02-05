@@ -1,8 +1,0 @@
-apiVersion: apps/v1
-kind: deployment
-metadata:
-  name: api-dep
-  labels:
-    app: starlonk-api
-spec:
-  replicas: 1
