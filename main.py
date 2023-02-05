@@ -18,7 +18,10 @@ from gql import query, mutation, type_defs, schema
 import uuid
 
 # Create DB tables if DNE
+print("creating models if dne")
 models.Base.metadata.create_all(bind=engine)
+print("created models if dne")
+
 
 app = FastAPI()
 
