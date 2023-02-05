@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-dep
+  labels:
+    app: starlonk-api
+    app.kubernetes.io/name: starlonk-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: starlonk-api
+  template:
+    metadata:
+      labels:
+        app: starlonk-api
+    spec:
+      containers:
+      - name: starlonk-api
+        image: starlonk-api-init:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 80
+        env:
+        - name: DB_HOST
+          value: postgres-db
+        - name: DB_USER
+          value: postgres
+        - name: DB_PASSWORD
+          value: postgres
+        - name: DB_NAME
+          value: postgres
+        - name: DB_PORT
+          value: "5432"
+        - name: API_KEY
+          value: t3hm4st3rk3y
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: starlonk-api-svc
+  labels:
+    app.kubernetes.io/name: starlonk-api-svc
+spec:
+  selector:
+    app.kubernetes.io/name: starlonk-api
+  ports:
+    - name: starlonk-api-svc-port
+      protocol: TCP
+      port: 80
+      targetPort: 80
