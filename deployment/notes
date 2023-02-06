@@ -1,14 +1,10 @@
+'''
+## Kube Admin Process ##
 
-# To do:
-  # Add volumes/claims for postgres db
-# Updated to use dockerhub - may find a better alternative
-
-
-
-Kube admin
-kubeadm init --pod-network-cidr=10.244.0.0/16 #defined cidr is required for coredns
-    sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-    sudo chown $(id -u):$(id -g) $HOME/.kube/config
+kubeadm init --pod-network-cidr=10.244.0.0/16 # defined cidr is required for coredns
+    - sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+    - sudo chown $(id -u):$(id -g) $HOME/.kube/config
+    - copy config to any secondary machines
 
 Update configs to use external address:
   apply: https://devops.stackexchange.com/questions/9483/how-can-i-add-an-additional-ip-hostname-to-my-kubernetes-certificate
@@ -22,3 +18,12 @@ Deploy ingress:
 
 Remove taint if needed:
   kubectl taint nodes shivaserv node-role.kubernetes.io/control-plane:NoSchedule-
+'''
+
+'''
+
+## Kube Initialization Process ##
+
+kubectl apply -f kube_pg.yml -f kube_api.yml -f api_ingress.yml
+
+'''

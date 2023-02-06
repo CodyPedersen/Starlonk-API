@@ -1,3 +1,37 @@
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: local-storage
+provisioner: kubernetes.io/no-provisioner
+volumeBindingMode: WaitForFirstConsumer
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pg-volume
+  labels:
+    type: local
+spec:
+  storageClassName: local-storage
+  capacity:
+    storage: 20Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/pv/postgres"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pg-volume-claim
+spec:
+  storageClassName: local-storage
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -12,6 +46,10 @@ spec:
       labels:
         app: postgres-db
     spec:
+      volumes:
+      - name: pg-volume-storage
+        persistentVolumeClaim:
+          claimName: pg-volume-claim
       containers:
       - name: postgres-db
         image: postgres:14.1-alpine
@@ -22,6 +60,9 @@ spec:
           value: postgres
         - name: POSTGRES_PASSWORD
           value: postgres
+        volumeMounts:
+          - mountPath: "/var/lib/postgresql/data"
+            name: pg-volume-storage
 ---
 apiVersion: v1
 kind: Service
