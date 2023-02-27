@@ -1,6 +1,6 @@
-from utils.models import Satellite, Process
+from utils.models import Satellite, Process, Prediction
 from utils.database import *
-from datetime import datetime
+from datetime import datetime, timedelta
 from utils.predict import predict_location
 
 #@query.field("satellite_by_id")
@@ -141,4 +141,33 @@ def bulk_prediction_resolver(obj, info, prediction_epoch):
     db.close()
     return payload
 
-    
+def predict_next_n_resolver(obj, info, satellite_id, minutes):
+    """Predicts next n minutes for a given satellite"""
+    print("in predict_next_n")
+    db = SessionLocal()
+    time_cutoff = datetime.utcnow() + timedelta(minutes=minutes)
+    prediction_list = []
+    try:
+        satellite_data = db.query(Satellite).filter(Satellite.satellite_id == satellite_id).first()
+        print(satellite_data.to_dict())
+        satellite_predictions = db.query(Prediction).filter(
+            Prediction.satellite_id == satellite_id and
+            Prediction.epoch <= time_cutoff and
+            Prediction.epoch >= (datetime.utcnow() - timedelta(minutes=1))
+        ).order_by(asc(Prediction.epoch)).all()
+
+        for prediction in satellite_predictions:
+            prediction_list.append(prediction.to_dict())
+
+        payload = {
+            "reference": satellite_data.to_dict(),
+            "predictions": prediction_list,
+            "success": True
+        }
+        
+    except Exception as e:
+        payload = {
+            "success": False,
+            "errors": [f"Unable to retrieve predictions: {str(e)}"]
+        }
+    return payload

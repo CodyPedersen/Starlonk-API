@@ -18,10 +18,7 @@ from gql import query, mutation, type_defs, schema
 import uuid
 
 # Create DB tables if DNE
-print("creating models if dne")
 models.Base.metadata.create_all(bind=engine)
-print("created models if dne")
-
 
 app = FastAPI()
 
@@ -139,7 +136,7 @@ async def graphql_fn(req: Request):
     print(data)
 
     # Use executable schema with user GQL query to generate result
-    _ , result = graphql_sync( 
+    _, result = graphql_sync( 
         schema,
         data,
         context_value=data,
@@ -147,8 +144,6 @@ async def graphql_fn(req: Request):
     ) 
     #status_code = 200 if success else 400
     return result
-
-
 
 
 # uvicorn main:app --reload

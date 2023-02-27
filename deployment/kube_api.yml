@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: starlonk-api
-        image: gitprotean/starlonk-api-init:latest
+        image: gitprotean/starlonk-api-init:v0.1
         ports:
         - containerPort: 80
         env:
