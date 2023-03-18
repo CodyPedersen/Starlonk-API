@@ -171,3 +171,50 @@ def predict_next_n_resolver(obj, info, satellite_id, minutes):
             "errors": [f"Unable to retrieve predictions: {str(e)}"]
         }
     return payload
+
+
+def bulk_predict_next_n_resolver(obj, info, minutes):
+    db = SessionLocal()
+    time_cutoff = datetime.utcnow() + timedelta(minutes=minutes)
+
+    prediction_ref_list = []
+    try:
+        all_satellites = db.query(Satellite).all()
+
+
+        # Get location prediction for all satellites
+        for satellite in all_satellites:
+            satellite_predictions = []
+            satellite_dict = satellite.to_dict()
+
+            # Grab predictions for a given satellite
+            satellite_prediction = db.query(Prediction).filter(
+                Prediction.satellite_id == satellite_dict['satellite_id'] and
+                Prediction.epoch <= time_cutoff and
+                Prediction.epoch >= (datetime.utcnow() - timedelta(minutes=1))
+            ).order_by(asc(Prediction.epoch)).all()
+
+            for prediction in satellite_prediction:
+                satellite_predictions.append(prediction.to_dict())
+
+            sat_payload = {
+                "reference": satellite_dict,
+                "predictions": satellite_predictions
+            }
+            
+            prediction_ref_list.append(sat_payload)
+
+        
+        payload = {
+            "success" : True,
+            "predictions": prediction_ref_list
+        }
+        #print(satellite_prediction)
+    except Exception as e:
+        payload = {
+            "success": False,
+            "errors": [f"Unable to retrieve processes: {str(e)}"]
+        }
+
+    db.close()
+    return payload

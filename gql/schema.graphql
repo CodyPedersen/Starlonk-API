@@ -86,9 +86,20 @@ type PredictionReference {
     prediction: Prediction!
 }
 
+type TimeSeriesItem {
+    reference: Satellite!
+    predictions: [Prediction]!
+}
+
 type TimeSeriesPrediction {
     reference: Satellite!
     predictions: [Prediction]!
+    success: Boolean!
+    errors: [String]
+}
+
+type BulkTimeSeriesPrediction {
+    predictions: [TimeSeriesItem]!
     success: Boolean!
     errors: [String]
 }
@@ -110,4 +121,5 @@ type Mutation {
     satellite_prediction(satellite_id: String!, prediction_epoch: String!): SatellitePrediction
     bulk_prediction(prediction_epoch: String!): SatellitesPrediction
     predict_next_n(satellite_id: String!, minutes: Int!): TimeSeriesPrediction
+    bulk_predict_next_n(minutes: Int!): BulkTimeSeriesPrediction
 }
