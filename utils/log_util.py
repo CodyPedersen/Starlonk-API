@@ -1,8 +1,9 @@
-from functools import wraps
+"""Simple logging for when stdio not available"""
 from datetime import datetime
 
 def log_data(data, date=True, stdout=True):
-    with open("log.txt", mode="a+") as logfile:
+    """Write data to file, for use in"""
+    with open("log.txt", mode="a+", encoding='utf8') as logfile:
         date_log = ''
         if date:
             date_log = datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + ': '
@@ -10,7 +11,7 @@ def log_data(data, date=True, stdout=True):
             logfile.write(date_log + data + "\n")
             if stdout:
                 print(date_log + data + "\n")
-        except:
+        except OSError:
             logfile.write("Failed to write to log file\n")
 
 # def log(f):
