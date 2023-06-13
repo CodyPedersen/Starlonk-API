@@ -5,9 +5,9 @@ from datetime import datetime, timedelta
 
 from sqlalchemy.orm import Session
 from ariadne import graphql_sync
-from gql import schema
 from fastapi import FastAPI, Request, Depends, Header, BackgroundTasks
 
+from gql import schema
 from utils.database import engine, get_db
 from utils.data import refresh_satellite_data, log_data
 from api.schemas import SatelliteQuery
@@ -149,6 +149,5 @@ async def graphql_fn(req: Request):
     )
     #status_code = 200 if success else 400
     return result
-
 
 # uvicorn main:app --reload
