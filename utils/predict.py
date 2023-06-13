@@ -1,12 +1,14 @@
+"""Holds all utilities related to satellite location prediction"""
+import datetime
+from dateutil import parser
+
+import numpy as np
+from sgp4.conveniences import dump_satrec
+from skyfield.api import load, EarthSatellite
+
 from utils.models import Satellite
 from utils.log_util import log_data
-from sgp4.conveniences import dump_satrec
-from pprint import pprint
-from skyfield.api import load, wgs84, EarthSatellite
 
-from dateutil import parser
-import numpy as np
-import datetime
 
 
 def convert_day_percentage(epoch):
@@ -30,12 +32,12 @@ def convert_bstar(bstar):
     sig_figs =[]
     for char in b_str:
         # Found decimal location
-        if (b_str[i] == '.'):
+        if b_str[i] == '.':
             decimal_i = i
         # Found sig figure
-        elif(decimal_i != None):
+        elif decimal_i != None:
             # If first sig fig, record location
-            if (sig_i == None and char != '0'):
+            if sig_i == None and char != '0':
                 sig_i = i
             if (char != '0' or (char=='0' and sig_i != None)):
                 sig_figs.append(char)
@@ -50,14 +52,14 @@ def convert_bstar(bstar):
 def compute_checksum(tle_line):
     """Compute checksum per TLE spec"""
 
-    sum = 0
+    checksum = 0
     for char in tle_line:
         if char.isdigit():
-            sum += int(char)
+            checksum += int(char)
         elif char == '-':
-            sum +=1
+            checksum +=1
 
-    return sum % 10
+    return checksum % 10
 
 
 
@@ -111,7 +113,6 @@ def convert_to_tle(
     mean_motion_ddot = "00000+0"
     ephemeris_type = '0'
 
-
     ''' Compute first string per TLE format '''
 
     # Calculate classification details and following spaces
@@ -136,7 +137,7 @@ def convert_to_tle(
         mean_motion_dot = ' ' + str(format(mean_motion_dot, '.8f')).replace('0.','.')
     else:
         mean_motion_dot = str(format(mean_motion_dot, '.8f')).replace('0.','.')
-    
+
     #Calculate mean motion dot details and following spaces
     mean_motion_dot_data = f'{epoch}{mean_motion_dot}'
     #print("mean_motion_dot_data len", len(mean_motion_dot_data))
@@ -156,9 +157,8 @@ def convert_to_tle(
     ephemeris = f'{bstar_all}'
     s_unchecked = f'{ephemeris}{element_set_no}'
     checksum = compute_checksum(s_unchecked)
-    
-    s = f'{s_unchecked}{checksum}'
 
+    s = f'{s_unchecked}{checksum}'
 
     ''' Compute second string per TLE format '''
 
@@ -173,9 +173,9 @@ def convert_to_tle(
     inclination_all = f'{inclination_data}{inclination_spaces}'
 
     # Format ra_of_asc_node (add starting space if < 100)
-    if (ra_of_asc_node < 10):
+    if  ra_of_asc_node < 10:
         ra = '  ' + format(ra_of_asc_node, '.4f')
-    elif (ra_of_asc_node < 100):
+    elif ra_of_asc_node < 100:
         ra = ' ' + format(ra_of_asc_node, '.4f')
     else:
         ra = format(ra_of_asc_node, '.4f')
@@ -266,6 +266,7 @@ def unpack_to_tle(**kwargs):
 
 
 def deNaN(loc):
+    """Swap NaN to None"""
     return None if np.isnan(loc) else loc
 
 
@@ -285,7 +286,7 @@ def predict_location(satellite: Satellite, prediction_epoch: str) -> dict:
     sky_sat =  EarthSatellite(s, t, satellite.satellite_name, ts)
 
     # Replace epoch
-    if (prediction_epoch == "now"):
+    if prediction_epoch == "now":
         now_dt = datetime.datetime.utcnow()
         t = ts.utc(int(now_dt.year), int(now_dt.month), int(now_dt.day), int(now_dt.hour), int(now_dt.minute), int(now_dt.second))
         
@@ -303,7 +304,7 @@ def predict_location(satellite: Satellite, prediction_epoch: str) -> dict:
     elevation_km = geocentric_coords.subpoint().elevation.km
     geo_pos_km = geocentric_coords.position.km.tolist()
     velocity_m_per_s = geocentric_coords.velocity.m_per_s
-    
+
     reference = satellite.to_dict()
 
     prediction = {
@@ -315,7 +316,7 @@ def predict_location(satellite: Satellite, prediction_epoch: str) -> dict:
             "latitude" : deNaN(lat.degrees),
             "longitude": deNaN(lon.degrees) 
         }
-    }   
+    }
 
     satellite_dict = {
         "reference" : reference,
