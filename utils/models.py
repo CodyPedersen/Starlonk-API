@@ -5,6 +5,7 @@ from . database import Base
 
 
 class Satellite(Base):
+    """Satellite table, holds data NORAD data"""
     __tablename__ = "satellite"
     satellite_name = Column(String, index=True)
     satellite_id = Column(String, unique=True, primary_key = True)
@@ -25,12 +26,14 @@ class Satellite(Base):
     source = Column(String)
 
     def to_dict(self):
+        """Convert attributes to a dictionary"""
         values = {}
         for col in self.__table__.columns: # for each column in this object's __table__ attribute
             values[col.name] = getattr(self, col.name) # Get the object's value (pulls from db)
         return values
     
 class Process(Base):
+    """Holds active and completed processes; updates, refreshes*"""
     __tablename__ = "process"
     id = Column(String, primary_key=True, index=True)
     status = Column(String, index=True)
@@ -38,12 +41,14 @@ class Process(Base):
     time_updated = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
     def to_dict(self):
+        """Convert attributes to a dictionary"""
         values = {}
         for col in self.__table__.columns: # for each column in this object's __table__ attribute
             values[col.name] = getattr(self, col.name) # Get the object's value (pulls from db)
         return values
     
 class Prediction(Base):
+    """Holds data related to satellite prediction"""
     __tablename__ = "prediction"
     satellite_name = Column(String, index=True)
     satellite_id = Column(String, primary_key=True)
@@ -55,6 +60,7 @@ class Prediction(Base):
     longitude = Column(Float)
 
     def to_dict(self):
+        """Convert attributes to a dictionary"""
         values = {}
         for col in self.__table__.columns: # for each column in this object's __table__ attribute
             values[col.name] = getattr(self, col.name) # Get the object's value (pulls from db)
