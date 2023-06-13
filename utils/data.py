@@ -1,12 +1,15 @@
-import requests
-from utils.models import Satellite, Process
-from sqlalchemy.orm import Session
-
-from utils.log_util import log_data
+"""Data ETL Processes"""
 import traceback
 
+import requests
+from sqlalchemy.orm import Session
 
-def push_process(db : Session, pid: str, status: str):
+from utils.models import Satellite, Process
+from utils.log_util import log_data
+
+
+def push_process(db: Session, pid: str, status: str):
+    """Pushes processes to database"""
     print("pushing process to db")
     process_data = {
         "id" : pid,
@@ -24,12 +27,12 @@ def push_process(db : Session, pid: str, status: str):
     else:
         process = Process(**process_data)
         db.add(process)
-    
     db.commit()
     print("pushed process to db")
 
 
 def format_satellite_data(satellite_json: list, source: str) -> list:
+    """Formats satellite JSON formats to a more user-friendly alternative"""
     satellites = []
 
     # Change satellite keys to a more readable format
@@ -37,7 +40,8 @@ def format_satellite_data(satellite_json: list, source: str) -> list:
 
         # Modify keys to Satellite model standards
         satellite = {
-            key.replace('OBJECT', 'satellite').lower():value for (key,value) in raw_satellite.items()
+            key.replace('OBJECT', 'satellite').lower():value 
+            for (key,value) in raw_satellite.items()
         }
         del satellite['mean_motion_ddot']
         satellite['source'] = source
@@ -49,15 +53,15 @@ def format_satellite_data(satellite_json: list, source: str) -> list:
 
 
 def pull_satellite_data() -> list:
-
+    """Pull NORAD Satellite data"""
     # Pull STARLINK satellites
     starlink = 'https://celestrak.org/NORAD/elements/gp.php?GROUP=starlink&FORMAT=json-pretty'
     
     log_data("Pulling data from NORAD")
     try:
-        satellite_response = requests.get(url=starlink)
+        satellite_response = requests.get(url=starlink, timeout=None)
         log_data(f"satellite_response{satellite_response}")
-    except:
+    except Exception as e:
         log_data("Unable to complete request")
         log_data(traceback.print_exc())
 
@@ -67,10 +71,6 @@ def pull_satellite_data() -> list:
     except:
         log_data(traceback.print_exc())
         log_data(traceback.print_exception())
-
-    # Pull Military satellites
-    
-    # Pull NOAA satellites
 
     return raw_data
 
@@ -91,7 +91,9 @@ async def refresh_satellite_data(db: Session, pid: str) -> None:
     for satellite_json in satellite_data:
 
         updated = False
-        updated = db.query(Satellite).filter(Satellite.satellite_id == satellite_json['satellite_id']).update(satellite_json)
+        updated = db.query(Satellite).filter(
+                Satellite.satellite_id == satellite_json['satellite_id']
+            ).update(satellite_json)
         db.commit()
 
         if not updated:
@@ -101,3 +103,4 @@ async def refresh_satellite_data(db: Session, pid: str) -> None:
     db.add_all(satellites_to_add)
     db.commit()
     push_process(db, pid, "complete")
+    
