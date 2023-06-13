@@ -1,10 +1,10 @@
+"""Database/Session initialization functionality"""
+import os
+
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy import asc
-
 from dotenv import load_dotenv
-import os
 
 
 #  Generate db session (for use with FastAPI)
@@ -16,7 +16,6 @@ def get_db():
         db.close()
 
 load_dotenv()
-
 
 # Database Setup
 host = os.getenv('DB_HOST')
