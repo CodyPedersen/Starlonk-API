@@ -1,5 +1,6 @@
-from pydantic import BaseModel
+"""REST response schemas"""
 from typing import Optional
+from pydantic import BaseModel
 
 
 class SatelliteQuery(BaseModel):

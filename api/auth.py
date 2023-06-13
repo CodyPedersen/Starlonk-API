@@ -1,5 +1,6 @@
-from functools import wraps
+"""Authorization functionality"""
 import os
+from functools import wraps
 
 def authorize(f):
     """Decorator to force API key authentication/authorization on API call"""
@@ -10,5 +11,4 @@ def authorize(f):
             return {"status": "Invalid credentials"}
 
         return await f(*args, **kwargs)
-    
     return resolver
