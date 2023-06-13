@@ -70,7 +70,6 @@ def pull_satellite_data() -> list:
         raw_data = satellite_response.json()
     except:
         log_data(traceback.print_exc())
-        log_data(traceback.print_exception())
 
     return raw_data
 
