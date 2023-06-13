@@ -4,9 +4,6 @@ from gql.resolvers import satellite_by_id_resolver, satellites_resolver, process
     processes_resolver, satellite_prediction_resolver, bulk_prediction_resolver, predict_next_n_resolver, \
     bulk_predict_next_n_resolver
 
-
-
-''' Initialize resolvers '''
 # Define schema objects
 query = ObjectType("Query")
 mutation = ObjectType("Mutation")
@@ -22,10 +19,6 @@ mutation.set_field("bulk_prediction", bulk_prediction_resolver)
 mutation.set_field("predict_next_n", predict_next_n_resolver)
 mutation.set_field("bulk_predict_next_n", bulk_predict_next_n_resolver)
 
-
-
-
-''' Initialize ariadne '''
 # Get defined schema
 type_defs = load_schema_from_path("gql/schema.graphql")
 
