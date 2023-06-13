@@ -1,10 +1,13 @@
-from utils.models import Satellite, Process, Prediction
-from utils.database import *
+"""Resolvers for GraphQL operations"""
 from datetime import datetime, timedelta
+
+from utils.database import *
+from utils.models import Satellite, Process, Prediction
 from utils.predict import predict_location
 
 #@query.field("satellite_by_id")
 def satellite_by_id_resolver(obj, info, satellite_id):
+    """Pull satellite data by id"""
 
     db = SessionLocal() # Can't use the FastAPI get_db - using SessionLocal() directly
     try:
@@ -13,7 +16,7 @@ def satellite_by_id_resolver(obj, info, satellite_id):
             "success": True,
             "satellite": satellite.to_dict()
         }
-    except AttributeError:  # todo not found
+    except AttributeError:
         payload = {
             "success": False,
             "errors": ["Satellite item matching {id} not found"]
@@ -21,8 +24,9 @@ def satellite_by_id_resolver(obj, info, satellite_id):
     db.close()
     return payload
 
-#@query.field("satellites")
+
 def satellites_resolver(obj, info):
+    """Pull multiple satellites"""
     db = SessionLocal()
     print('obj: ', obj)
     print('info: ', info, type(info))
@@ -32,10 +36,10 @@ def satellites_resolver(obj, info):
             "success" : True,
             "satellites": [satellite.to_dict() for satellite in satellites]
         }
-    except Exception as e:
+    except Exception as ex:
         payload = {
             "success": False,
-            "errors": [f"Unable to retrieve satellites: {str(e)} "]
+            "errors": [f"Unable to retrieve satellites: {str(ex)} "]
         }
 
     db.close()
@@ -55,16 +59,17 @@ def process_by_id_resolver(obj, info, process_id):
             "success": True,
             "process": process_dict
         }
-    except Exception as e:  # todo not found
+    except Exception as ex:  # todo not found
         payload = {
             "success": False,
-            "errors": ["Process item matching {id} not found", str(e)]
+            "errors": ["Process item matching {id} not found", str(ex)]
         }
 
     db.close()
     return payload
 
 def processes_resolver(obj, info):
+    """Get multiple processes"""
     db = SessionLocal()
 
     try:
@@ -84,10 +89,10 @@ def processes_resolver(obj, info):
             "success" : True,
             "processes": processes
         }
-    except Exception as e:
+    except Exception as ex:
         payload = {
             "success": False,
-            "errors": [f"Unable to retrieve processes: {str(e)}"]
+            "errors": [f"Unable to retrieve processes: {str(ex)}"]
         }
 
     db.close()
@@ -95,6 +100,7 @@ def processes_resolver(obj, info):
 
 
 def satellite_prediction_resolver(obj, info, satellite_id, prediction_epoch):
+    """Predict the location of a given satellite"""
     db = SessionLocal()
 
     try:
@@ -105,10 +111,10 @@ def satellite_prediction_resolver(obj, info, satellite_id, prediction_epoch):
             "reference": satellite_prediction['reference'],
             "prediction": satellite_prediction['prediction']
         }
-    except Exception as e:
+    except Exception as ex:
         payload = {
             "success": False,
-            "errors": [f"Unable to retrieve processes: {str(e)}"]
+            "errors": [f"Unable to retrieve processes: {str(ex)}"]
         }
     print(payload)
     db.close()
@@ -116,6 +122,7 @@ def satellite_prediction_resolver(obj, info, satellite_id, prediction_epoch):
 
 
 def bulk_prediction_resolver(obj, info, prediction_epoch):
+    """Predict the location of multiple satellites"""
     db = SessionLocal()
 
     try:
@@ -132,10 +139,10 @@ def bulk_prediction_resolver(obj, info, prediction_epoch):
             "prediction": satellite_predictions
         }
         #print(satellite_prediction)
-    except Exception as e:
+    except Exception as ex:
         payload = {
             "success": False,
-            "errors": [f"Unable to retrieve processes: {str(e)}"]
+            "errors": [f"Unable to retrieve processes: {str(ex)}"]
         }
 
     db.close()
@@ -143,7 +150,6 @@ def bulk_prediction_resolver(obj, info, prediction_epoch):
 
 def predict_next_n_resolver(obj, info, satellite_id, minutes):
     """Predicts next n minutes for a given satellite"""
-    print("in predict_next_n")
     db = SessionLocal()
     time_cutoff = datetime.utcnow() + timedelta(minutes=minutes)
     prediction_list = []
@@ -165,15 +171,16 @@ def predict_next_n_resolver(obj, info, satellite_id, minutes):
             "success": True
         }
         
-    except Exception as e:
+    except Exception as ex:
         payload = {
             "success": False,
-            "errors": [f"Unable to retrieve predictions: {str(e)}"]
+            "errors": [f"Unable to retrieve predictions: {str(ex)}"]
         }
     return payload
 
 
 def bulk_predict_next_n_resolver(obj, info, minutes):
+    """Bulk predict for next n minutes"""
     db = SessionLocal()
     time_cutoff = datetime.utcnow() + timedelta(minutes=minutes)
 
@@ -210,10 +217,10 @@ def bulk_predict_next_n_resolver(obj, info, minutes):
             "predictions": prediction_ref_list
         }
         #print(satellite_prediction)
-    except Exception as e:
+    except Exception as ex:
         payload = {
             "success": False,
-            "errors": [f"Unable to retrieve processes: {str(e)}"]
+            "errors": [f"Unable to retrieve processes: {str(ex)}"]
         }
 
     db.close()
