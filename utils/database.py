@@ -28,6 +28,6 @@ DATABASE_CONNECTION_URI = f'postgresql://{user}:{password}@{host}:{port}/{databa
 print(DATABASE_CONNECTION_URI)
 
 # SQL Alchemy
-engine = create_engine(DATABASE_CONNECTION_URI) # Create connection to databse
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine) # Individual sessions inherit from me
-Base = declarative_base() # Used for models
+engine = create_engine(DATABASE_CONNECTION_URI)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+Base = declarative_base()
