@@ -1,8 +1,4 @@
-# Starlink API
+# Starlonk API
 
-# Use the same timestamp when bulk predicting
-# Delete satellites where time since update > some delta
-# implement mean_motion_ddot
-# Add GraphQL endpoint
-    # Satellites
-    # Prediction
+Interface to pull Starlink satellite metadata and predictions. Supports GraphQL and REST.
+Utilizes Starlonk-Airflow as a data backend.
