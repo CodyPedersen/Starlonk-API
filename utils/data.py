@@ -11,23 +11,11 @@ from utils.log_util import log_data
 def push_process(db: Session, pid: str, status: str):
     """Pushes processes to database"""
     print("pushing process to db")
-    process_data = {
-        "id" : pid,
-        "status" : status
-    }
+    
+    # Create a new Process instance with the given data
+    process = Process(id=pid, status=status)
 
-    # Query processes on pid
-    exists = db.query(Process).filter(Process.id == pid)
-
-    # Update value if exists, else create
-    if exists.first():
-        process_obj = exists.one()
-        process_obj.status = status
-        db.commit()
-    else:
-        process = Process(**process_data)
-        db.add(process)
-    db.commit()
+    db.merge(process)
     print("pushed process to db")
 
 
