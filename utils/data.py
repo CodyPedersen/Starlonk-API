@@ -1,11 +1,20 @@
 """Data ETL Processes"""
-import traceback
+import logging
 
 import requests
 from sqlalchemy.orm import Session
 
 from utils.models import Satellite, Process
-from utils.log_util import log_data
+
+
+logger = logging.getLogger(__name__)
+logging.basicConfig(
+    filename='logs.txt',
+    filemode='a',
+    format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
+    datefmt='%H:%M:%S',
+    level=logging.DEBUG
+)
 
 
 def push_process(db: Session, pid: str, status: str):
@@ -45,19 +54,20 @@ def pull_satellite_data() -> list:
     # Pull STARLINK satellites
     starlink = 'https://celestrak.org/NORAD/elements/gp.php?GROUP=starlink&FORMAT=json-pretty'
     
-    log_data("Pulling data from NORAD")
+    logging.info("Pulling data from NORAD")
     try:
         satellite_response = requests.get(url=starlink, timeout=None)
-        log_data(f"satellite_response{satellite_response}")
+        logging.info(f"satellite_response{satellite_response}")
     except Exception as e:
-        log_data("Unable to complete request")
-        log_data(traceback.print_exc())
+        logging.error(f"Unable to complete NORAD request: {repr(e)}")
+        raise e
 
-    log_data("Parsing data from NORAD")
+    logging.info("Parsing data from NORAD")
     try:
         raw_data = satellite_response.json()
-    except:
-        log_data(traceback.print_exc())
+    except Exception as e:
+        logging.error(f"Failed to parse json: {repr(e)}")
+        raise e
 
     return raw_data
 
@@ -71,7 +81,6 @@ async def refresh_satellite_data(db: Session, pid: str) -> None:
     # Begin satellite data ETL
     raw_data = pull_satellite_data()
     satellite_data = format_satellite_data(raw_data, source='STARLINK')
-    #log_data(f"About to parse satellite data {satellite_data}")
 
     # Unpack and create object for each satellite
     satellites_to_add = []
