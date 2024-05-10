@@ -10,7 +10,6 @@ from utils.models import Satellite
 from utils.log_util import log_data
 
 
-
 def convert_day_percentage(epoch):
     """Convert a datetime object to decimal TLE format"""
 
