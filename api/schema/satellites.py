@@ -4,6 +4,8 @@ from pydantic import BaseModel
 
 
 class SatelliteQuery(BaseModel):
+    """Schema for satellite queries"""
+    
     satellite_name: Optional[str]
     satellite_id: Optional[str]
     epoch: Optional[str]
@@ -21,10 +23,3 @@ class SatelliteQuery(BaseModel):
     bstar: Optional[float]
     mean_motion_dot: Optional[float]
     source: Optional[str]
-
-# Currently unused
-class Process(BaseModel):
-    id: str
-    status: str
-    time_created: Optional[str] # Datetime
-    time_updated: Optional[str] # Datetime

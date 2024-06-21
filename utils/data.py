@@ -4,7 +4,7 @@ import logging
 import requests
 from sqlalchemy.orm import Session
 
-from utils.models import Satellite, Process
+from database.models import Satellite, Process
 
 
 logger = logging.getLogger(__name__)
@@ -19,13 +19,13 @@ logging.basicConfig(
 
 def push_process(db: Session, pid: str, status: str):
     """Pushes processes to database"""
-    print("pushing process to db")
+    logging.info("pushing process to db")
     
     # Create a new Process instance with the given data
     process = Process(id=pid, status=status)
 
     db.merge(process)
-    print("pushed process to db")
+    logging.info("pushed process to db")
 
 
 def format_satellite_data(satellite_json: list, source: str) -> list:

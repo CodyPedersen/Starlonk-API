@@ -1,8 +1,8 @@
 """Resolvers for GraphQL operations"""
 from datetime import datetime, timedelta
 
-from utils.database import *
-from utils.models import Satellite, Process, Prediction
+from database.database import *
+from database.models import Satellite, Process, Prediction
 from utils.predict import predict_location
 
 #@query.field("satellite_by_id")
@@ -28,8 +28,7 @@ def satellite_by_id_resolver(obj, info, satellite_id):
 def satellites_resolver(obj, info):
     """Pull multiple satellites"""
     db = SessionLocal()
-    print('obj: ', obj)
-    print('info: ', info, type(info))
+
     try:
         satellites = db.query(Satellite).all()
         payload = {
@@ -59,7 +58,7 @@ def process_by_id_resolver(obj, info, process_id):
             "success": True,
             "process": process_dict
         }
-    except Exception as ex:  # todo not found
+    except Exception as ex:  # TODO: not found
         payload = {
             "success": False,
             "errors": ["Process item matching {id} not found", str(ex)]
