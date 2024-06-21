@@ -6,8 +6,7 @@ import numpy as np
 from sgp4.conveniences import dump_satrec
 from skyfield.api import load, EarthSatellite
 
-from utils.models import Satellite
-from utils.log_util import log_data
+from database.models import Satellite
 
 
 def convert_day_percentage(epoch):
@@ -275,11 +274,6 @@ def predict_location(satellite: Satellite, prediction_epoch: str) -> dict:
     # Get TLE of Satellite object
     s, t = unpack_to_tle(**satellite.to_dict())
 
-    # log data
-    log_data(satellite.satellite_name, date=False, stdout=False)
-    log_data(s, date=False, stdout=False)
-    log_data(t, date=False, stdout=False)
-
     # Generate skyfield satellite object
     ts = load.timescale()
     sky_sat =  EarthSatellite(s, t, satellite.satellite_name, ts)
@@ -288,14 +282,14 @@ def predict_location(satellite: Satellite, prediction_epoch: str) -> dict:
     if prediction_epoch == "now":
         now_dt = datetime.datetime.utcnow()
         t = ts.utc(int(now_dt.year), int(now_dt.month), int(now_dt.day), int(now_dt.hour), int(now_dt.minute), int(now_dt.second))
-        
+
         # Generate now() timestamp
         prediction_epoch = now_dt.isoformat()
 
     else:
         epoch = parser.parse(prediction_epoch)
         t = ts.utc(int(epoch.year), int(epoch.month), int(epoch.day), int(epoch.hour), int(epoch.minute), int(epoch.second))
-  
+
     ''' Calculate coords & data points '''
     geocentric_coords = sky_sat.at(t)
     lat = geocentric_coords.subpoint().latitude

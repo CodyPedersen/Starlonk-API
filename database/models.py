@@ -1,10 +1,20 @@
 from sqlalchemy import Column, Integer, String, Float, DateTime, ARRAY
 from sqlalchemy.sql import func
 
-from . database import Base
+from .database import Base
+
+class BaseObj(Base):
+
+    __abstract__ = True
+    def to_dict(self):
+        """Convert attributes to a dictionary"""
+        values = {}
+        for col in self.__table__.columns: # for each column in this object's __table__ attribute
+            values[col.name] = getattr(self, col.name) # Get the object's value (pulls from db)
+        return values
 
 
-class Satellite(Base):
+class Satellite(BaseObj):
     """Satellite table, holds data NORAD data"""
     __tablename__ = "satellite"
     satellite_name = Column(String, index=True)
@@ -25,14 +35,10 @@ class Satellite(Base):
     mean_motion_dot = Column(Float)
     source = Column(String)
 
-    def to_dict(self):
-        """Convert attributes to a dictionary"""
-        values = {}
-        for col in self.__table__.columns: # for each column in this object's __table__ attribute
-            values[col.name] = getattr(self, col.name) # Get the object's value (pulls from db)
-        return values
+
     
-class Process(Base):
+
+class Process(BaseObj):
     """Holds active and completed processes; updates, refreshes*"""
     __tablename__ = "process"
     id = Column(String, primary_key=True, index=True)
@@ -40,14 +46,8 @@ class Process(Base):
     time_created = Column(DateTime(timezone=True), server_default=func.now())
     time_updated = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
-    def to_dict(self):
-        """Convert attributes to a dictionary"""
-        values = {}
-        for col in self.__table__.columns: # for each column in this object's __table__ attribute
-            values[col.name] = getattr(self, col.name) # Get the object's value (pulls from db)
-        return values
-    
-class Prediction(Base):
+
+class Prediction(BaseObj):
     """Holds data related to satellite prediction"""
     __tablename__ = "prediction"
     satellite_name = Column(String, index=True)
@@ -59,10 +59,4 @@ class Prediction(Base):
     latitude = Column(Float)
     longitude = Column(Float)
 
-    def to_dict(self):
-        """Convert attributes to a dictionary"""
-        values = {}
-        for col in self.__table__.columns: # for each column in this object's __table__ attribute
-            values[col.name] = getattr(self, col.name) # Get the object's value (pulls from db)
-        return values
     

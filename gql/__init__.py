@@ -1,8 +1,19 @@
-from ariadne import load_schema_from_path, make_executable_schema, \
-    graphql_sync, snake_case_fallback_resolvers, ObjectType
-from gql.resolvers import satellite_by_id_resolver, satellites_resolver, process_by_id_resolver, \
-    processes_resolver, satellite_prediction_resolver, bulk_prediction_resolver, predict_next_n_resolver, \
+from ariadne import (
+    load_schema_from_path,
+    make_executable_schema,
+    snake_case_fallback_resolvers, 
+    ObjectType
+)
+from gql.resolvers import (
+    satellite_by_id_resolver,
+    satellites_resolver,
+    process_by_id_resolver,
+    processes_resolver,
+    satellite_prediction_resolver,
+    bulk_prediction_resolver,
+    predict_next_n_resolver,
     bulk_predict_next_n_resolver
+)
 
 # Define schema objects
 query = ObjectType("Query")
