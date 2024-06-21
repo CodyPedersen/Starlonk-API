@@ -53,7 +53,8 @@ async def get_process(
 @adm_router.post("/admin/purge")
 @authorize
 async def purge_old(
-    db: Session = Depends(get_db), Authorization: Union[str, None] = Header(default=None)
+    db: Session = Depends(get_db), 
+    Authorization: Union[str, None] = Header(default=None)
 ):
     """Remove satellites that have not been updated in two weeks"""
 

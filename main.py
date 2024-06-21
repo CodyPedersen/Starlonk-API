@@ -39,6 +39,5 @@ async def graphql_fn(req: Request):
         context_value=data,
         debug=app.debug
     )
-    #status_code = 200 if success else 400
-    return result
 
+    return result

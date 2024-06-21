@@ -20,7 +20,7 @@ logging.basicConfig(
 def push_process(db: Session, pid: str, status: str):
     """Pushes processes to database"""
     logging.info("pushing process to db")
-    
+
     # Create a new Process instance with the given data
     process = Process(id=pid, status=status)
 
@@ -37,7 +37,7 @@ def format_satellite_data(satellite_json: list, source: str) -> list:
 
         # Modify keys to Satellite model standards
         satellite = {
-            key.replace('OBJECT', 'satellite').lower():value 
+            key.replace('OBJECT', 'satellite').lower():value
             for (key,value) in raw_satellite.items()
         }
         del satellite['mean_motion_ddot']
@@ -53,7 +53,7 @@ def pull_satellite_data() -> list:
     """Pull NORAD Satellite data"""
     # Pull STARLINK satellites
     starlink = 'https://celestrak.org/NORAD/elements/gp.php?GROUP=starlink&FORMAT=json-pretty'
-    
+
     logging.info("Pulling data from NORAD")
     try:
         satellite_response = requests.get(url=starlink, timeout=None)
@@ -73,7 +73,7 @@ def pull_satellite_data() -> list:
 
 
 async def refresh_satellite_data(db: Session, pid: str) -> None:
-    ''' Pulls Satellite data from Gov. sources, cleans it and pushes it to the DB '''
+    """Pulls Satellite data from govt. sources, cleans it and pushes it to the DB"""
 
     # Create Process and push to DB
     push_process(db, pid, status="started")
