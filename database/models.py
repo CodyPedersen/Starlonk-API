@@ -36,8 +36,6 @@ class Satellite(BaseObj):
     source = Column(String)
 
 
-    
-
 class Process(BaseObj):
     """Holds active and completed processes; updates, refreshes*"""
     __tablename__ = "process"
@@ -58,5 +56,4 @@ class Prediction(BaseObj):
     geo_velocity_m_per_s = Column(ARRAY(Float))
     latitude = Column(Float)
     longitude = Column(Float)
-
     

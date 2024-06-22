@@ -1,0 +1,6 @@
+DB_HOST: 0.0.0.0
+DB_USER: postgres
+DB_PASSWORD: postgres
+DB_NAME: postgres
+DB_PORT: 5432
+TEST_CFG: do_not_remove_me
