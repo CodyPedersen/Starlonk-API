@@ -14,3 +14,6 @@ python3 .
 
 ## FastAPI/GraphQL Docker or Kubernetes setup
 see `deployment/README.md`
+
+## Architecture diagram
+![Architecture](https://github.com/CodyPedersen/Starlonk-API/blob/main/architecture.png?raw=true)
