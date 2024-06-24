@@ -1,6 +1,4 @@
 """Database/Session initialization functionality"""
-import os
-
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
@@ -9,8 +7,9 @@ from dotenv import load_dotenv
 from config import Config as cfg
 
 
-#  Generate db session (for use with FastAPI)
+# Generate db session (for use with FastAPI)
 def get_db():
+    """Yield and close a db"""
     db = SessionLocal()
     try:
         yield db
@@ -27,7 +26,6 @@ PORT = cfg.DB_PORT
 DATABASE = cfg.DB_NAME
 
 DATABASE_CONNECTION_URI = f'postgresql://{USER}:{PASSWORD}@{HOST}:{PORT}/{DATABASE}'
-print(DATABASE_CONNECTION_URI)
 
 # SQL Alchemy
 engine = create_engine(DATABASE_CONNECTION_URI)
