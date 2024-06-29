@@ -77,11 +77,11 @@ def get_attributes(sat):
 
 
 def convert_to_tle(
-    norad_cat_id, 
+    norad_cat_id,
     classification_type,
     satellite_id,
     epoch_str,
-    mean_motion_dot, 
+    mean_motion_dot,
     bstar,
     element_set_no,
     inclination,
