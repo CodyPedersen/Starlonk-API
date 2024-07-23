@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3.10'
 services:
   db:
     image: postgres:14.1-alpine
@@ -10,6 +10,8 @@ services:
       - '5432:5432'
     volumes: 
       - stardb:/var/lib/postgresql/data
+    networks:
+      - starlonk-network
   api:
     image: starlink-api-init:latest
     build:
@@ -26,6 +28,11 @@ services:
       DB_NAME: postgres
       DB_PORT: 5432
       API_KEY: t3hm4st3rk3y
+    networks:
+      - starlonk-network
 volumes:
   stardb:
     driver: local
+networks:
+  starlonk-network:
+    driver: bridge

@@ -1,0 +1,16 @@
+version: '3.10'
+services:
+  api:
+    image: starlink-api-init:latest
+    build:
+      context: ../../
+    ports:
+      - 80:80
+    restart: always
+    environment:
+      DB_HOST: 0.0.0.0
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: postgres
+      DB_PORT: 5432
+      API_KEY: t3hm4st3rk3y

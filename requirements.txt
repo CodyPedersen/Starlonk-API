@@ -1,6 +1,6 @@
 anyio==3.6.1
 ariadne==0.16.1
-astropy==5.1
+astropy==6.1
 astroquery==0.4.6
 autopep8==2.0.0
 beautifulsoup4==4.11.1
@@ -30,11 +30,10 @@ packaging==21.3
 pandas==1.5.0
 Pillow==9.2.0
 plotly==5.10.0
-poliastro==0.17.0
 psycopg2==2.9.5
 pycodestyle==2.9.1
 pydantic==1.10.2
-pyerfa==2.0.0.1
+pyerfa==2.0.1.1
 pyparsing==3.0.9
 python-dateutil==2.8.2
 python-dotenv==0.21.0

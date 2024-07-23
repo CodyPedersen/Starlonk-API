@@ -5,16 +5,11 @@ from fastapi import FastAPI, Request
 
 from gql import schema
 
-import database.models as models
 from api.routers import (
     adm_router,
     base_router,
     sat_router
 )
-from database.database import engine
-
-# Create DB tables if DNE
-models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 

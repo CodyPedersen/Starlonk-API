@@ -6,7 +6,6 @@ from dotenv import load_dotenv
 
 from config import Config as cfg
 
-
 # Generate db session (for use with FastAPI)
 def get_db():
     """Yield and close a db"""
@@ -31,3 +30,6 @@ DATABASE_CONNECTION_URI = f'postgresql://{USER}:{PASSWORD}@{HOST}:{PORT}/{DATABA
 engine = create_engine(DATABASE_CONNECTION_URI)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
+
+# Create DB tables if DNE
+Base.metadata.create_all(bind=engine)
