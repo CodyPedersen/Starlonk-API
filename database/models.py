@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, Float, DateTime, ARRAY
 from sqlalchemy.sql import func
 
-from .database import Base
+from .database import Base, engine
 
 class BaseObj(Base):
 
@@ -56,4 +56,5 @@ class Prediction(BaseObj):
     geo_velocity_m_per_s = Column(ARRAY(Float))
     latitude = Column(Float)
     longitude = Column(Float)
-    
+
+Base.metadata.create_all(bind=engine)
